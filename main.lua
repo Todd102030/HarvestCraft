@@ -210,10 +210,12 @@ end
 
 function love.update(dt)
 	
+	--Makes character move based on Delta t so movement is the same no matter the framerate
 	charspeed = 350*dt
 	
 	togglecount = togglecount + dt
 	
+	--Character movement, pretty straightforward
 	if love.keyboard.isDown("right") then 
 		character.x = character.x + charspeed
 		
@@ -230,6 +232,8 @@ function love.update(dt)
 		character.y = character.y + charspeed
 		
     end
+    
+    --Keeps character bound within a certain area of the screen
     if character.y > 450+camera.y then
 		camera.y = camera.y + charspeed
 		character.y = 450+camera.y
@@ -248,12 +252,15 @@ function love.update(dt)
 		character.x = 350+camera.x
 	end
     
+    --xrange and yrange are variables that show where the character is
+    --on the full map
     xrangefloat= character.x / tilesize
 	xrange = math.floor(xrangefloat)
     
     yrangefloat= character.y / tilesize
 	yrange = math.floor(yrangefloat)
 	
+	--these will be 
 	xrangenorm = math.floor((camera.x+400)/tilesize)
 	yrangenorm = math.floor((camera.y+400)/tilesize)
 	
@@ -370,11 +377,12 @@ function love.update(dt)
     
     
     if lighting == true then
+		--I don't know why this part isn't using x/yrange or x/yrangenorm but it seems to work. Will look into this.
 		character.xpos = roundnum(character.x / tilesize)
 		character.ypos = roundnum(character.y / tilesize)
 
-		--make work by using if statements for each 4 quadrants
-
+		--All sorts of trigonometry to determine the dynamic lighting effect around the character.
+		--It honestly makes no sense to me any more. 
 		resolution = 500
 		for rotation = 1, resolution do
 			for distance = 1, sightradius do
@@ -447,7 +455,7 @@ end
 function love.draw()
 	
 	camera:set()
-	
+	--Pretty straightforward code to determine what tiles to draw on the screen
 	love.graphics.setColor(0,0,0,255)
 	for x=xrangenorm-20,xrangenorm +20 do
 		for y=yrangenorm-20,yrangenorm +20 do
@@ -518,7 +526,7 @@ function love.draw()
 		love.graphics.setColor(255,255,255,255)
 		love.graphics.print("Minimap off", 150 +camera.x, 10+camera.y)
 	end
-	
+	--A bunch of stats displayed on screen to make things easier to debug
 	love.graphics.setColor(0,0,0,255)
 	love.graphics.circle("fill",character.x,character.y,10)
 	
