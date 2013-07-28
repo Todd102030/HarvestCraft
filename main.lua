@@ -15,12 +15,14 @@
 --^^Just not sure how to make each chunk merge nicely with the adjacent one.
 
 --Hide skill points as items in chests in dungeons
+--Make it so that the map doesn't jitter as you walk
 
 
 function love.load()
 
 	water = love.graphics.newImage("resources/tiles/Water.jpg")
 	grass = love.graphics.newImage("resources/tiles/Grass.jpg")
+	tree = love.graphics.newImage("resources/tiles/Tree.jpg")
 
 	love.window.setCaption("Terrain Generation Alpha")
 	love.window.setMode(800,800)
@@ -476,6 +478,10 @@ function love.draw()
 							love.graphics.setColor(0,255,0,255)
 							love.graphics.rectangle("fill",x*tilesize,y*tilesize,tilesize,tilesize)
 						end
+						if map[y][x]==13 then
+							love.graphics.setColor(210,210,210,255)
+							love.graphics.draw(tree,x*tilesize, y*tilesize)
+						end
 						
 					end
 				else
@@ -507,12 +513,12 @@ function love.draw()
 		--MINIMAP DRAWING
 		for x=0,100,3 do
 			for y=0,100,3 do
-				if y+yrange-50 > ymin and y+yrange-50 < ymax and x+xrange-50 > xmin and x+xrange-50 < xmax then
+				if y+yrangenorm-50 > ymin and y+yrangenorm-50 < ymax and x+xrangenorm-50 > xmin and x+xrangenorm-50 < xmax then
 					--if minimap[y+yrange-50][x+xrange-50].mapvisible == true then
-						if map[y+yrange-50][x+xrange-50]>=0 then
-							if map[y+yrange-50][x+xrange-50]<=10 then
+						if map[y+yrangenorm-50][x+xrangenorm-50]>=0 then
+							if map[y+yrangenorm-50][x+xrangenorm-50]<=10 then
 								love.graphics.setColor(0,0,200,255)
-							elseif map[y+yrange-50][x+xrange-50]<=50 then
+							elseif map[y+yrangenorm-50][x+xrangenorm-50]<=50 then
 								love.graphics.setColor(140,200,80,255)
 							else
 								love.graphics.setColor(0,255,0,255)
