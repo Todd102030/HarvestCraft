@@ -1,15 +1,15 @@
 
 --THINGS TO DO
---Make tilesize adjustable without breaking everything
+--Make tilesize adjustable without breaking everything //SEEMS FIXED
 --Make graphics for each height level; dark water, light water, sand, grass, dirt, rock, snow
 --Fix the radiuses on the terrain gen
 --Fix the out of bounds errors
 --Fix painting so that it normalizes properly and stops getting out of line with the mouse.
 --//optimize minimap
---Fix rotation on dynamic lighting
+--Fix rotation on dynamic lighting 
 --Make dynamic lighting keep moving outwards uphill until it reaches a peak and starts going downwards. 
 --^^Makes more sense than current method. Can do this by storing previous height value and seeing if the 
---^^new one is lower. Only break the for loop if the next step outwards is lower than the previous one. 
+--^^new one is lower. Only break the for loop if the next step outwards is lower than the previous one. //DON'T GIVE A FUCK ANY MORE
 --Bigger maps
 --Make maps infinitely generate? Can do this by having a big grid, each value representing a 100x100 grid of the map.
 --^^Just not sure how to make each chunk merge nicely with the adjacent one.
@@ -27,7 +27,7 @@ function love.load()
 
 	--length/width of map and tile squares 
 	minimapsize = 2
-	tilesize = 20
+	tilesize = 32
 
 	--main character
 	character = {}
@@ -39,6 +39,8 @@ function love.load()
 	yrange = character.y / tilesize
 	
 	
+	--variable that determines whether or not to use the lighting engine
+	cave = false
 	
 
 	--outermost range of map array
@@ -291,78 +293,78 @@ function love.update(dt)
     
     
     if love.mouse.isDown("l") then
-		mapx, mapy = love.mouse.getPosition()
+		xmouse, ymouse = love.mouse.getPosition()
 		--map[math.floor(mapy/tilesize)+yrange - 20][math.floor(mapx/tilesize)+xrange - 20]=map[math.floor(mapy/tilesize)+yrange - 20][math.floor(mapx/tilesize)+xrange - 20]+3
 		
-		y = math.floor(camera.y + mapy / tilesize)-yrangenorm --math.floor(mapy/tilesize)+yrangenorm-tilesize
-		x = math.floor(camera.x + mapx / tilesize)-xrangenorm --math.floor(mapx/tilesize)+xrangenorm-tilesize
-		if map[y-1][x] < 25 then
-			map[y-1][x] = map[y-1][x] + 1
-		end
-		if map[y][x] < 25 then
-			map[y][x] = map[y][x] + 1
-		end
-		if map[y+1][x] < 25 then
-			map[y+1][x] = map[y+1][x] + 1
-		end
-		if map[y-1][x-1] < 25 then
-			map[y-1][x-1] = map[y-1][x-1] + 1
-		end
-		if map[y][x-1] < 25 then
-			map[y][x-1] = map[y][x-1] + 1
-		end
-		if map[y+1][x-1] < 25 then
-			map[y+1][x-1] = map[y+1][x-1] + 1
-		end
-		if map[y-1][x+1] < 25 then
-			map[y-1][x+1] = map[y-1][x+1] + 1
-		end
-		if map[y][x+1] < 25 then
-			map[y][x+1] = map[y][x+1] + 1
-		end
-		if map[y+1][x+1] < 25 then
-			map[y+1][x+1] = map[y+1][x+1] + 1
+		y = math.floor((camera.y + ymouse) / tilesize)---yrangenorm --math.floor(mapy/tilesize)+yrangenorm-tilesize
+		x = math.floor((camera.x + xmouse) / tilesize)---xrangenorm --math.floor(mapx/tilesize)+xrangenorm-tilesize
+		if y > ymin and y < ymax and x > xmin and x < xmax then
+			if map[y-1][x] < 25 then
+				map[y-1][x] = map[y-1][x] + 1
+			end
+			if map[y][x] < 25 then
+				map[y][x] = map[y][x] + 1
+			end
+			if map[y+1][x] < 25 then
+				map[y+1][x] = map[y+1][x] + 1
+			end
+			if map[y-1][x-1] < 25 then
+				map[y-1][x-1] = map[y-1][x-1] + 1
+			end
+			if map[y][x-1] < 25 then
+				map[y][x-1] = map[y][x-1] + 1
+			end
+			if map[y+1][x-1] < 25 then
+				map[y+1][x-1] = map[y+1][x-1] + 1
+			end
+			if map[y-1][x+1] < 25 then
+				map[y-1][x+1] = map[y-1][x+1] + 1
+			end
+			if map[y][x+1] < 25 then
+				map[y][x+1] = map[y][x+1] + 1
+			end
+			if map[y+1][x+1] < 25 then
+				map[y+1][x+1] = map[y+1][x+1] + 1
+			end
 		end
 		
 	end
 	
 	if love.mouse.isDown("r") then
-		mapx, mapy = love.mouse.getPosition()
+		xmouse, ymouse = love.mouse.getPosition()
 		--map[math.floor(mapy/tilesize)+yrange - 20][math.floor(mapx/tilesize)+xrange - 20]=map[math.floor(mapy/tilesize)+yrange - 20][math.floor(mapx/tilesize)+xrange - 20]+3
 		
-		xrand = 3
-		yrand = 3
-		y = math.floor(mapy/tilesize)+yrangenorm-tilesize
-		x = math.floor(mapx/tilesize)+xrangenorm-tilesize
-		
-		if map[y-1][x] > 1 then
-			map[y-1][x] = map[y-1][x] - 1
+		y = math.floor((camera.y + ymouse) / tilesize)---yrangenorm --math.floor(mapy/tilesize)+yrangenorm-tilesize
+		x = math.floor((camera.x + xmouse) / tilesize)---xrangenorm --math.floor(mapx/tilesize)+xrangenorm-tilesize
+		if y > ymin and y < ymax and x > xmin and x < xmax then
+			if map[y-1][x] > 1 then
+				map[y-1][x] = map[y-1][x] - 1
+			end
+			if map[y][x] > 1 then
+				map[y][x] = map[y][x] - 1
+			end
+			if map[y+1][x] > 1 then
+				map[y+1][x] = map[y+1][x] - 1
+			end
+			if map[y-1][x-1] > 1 then
+				map[y-1][x-1] = map[y-1][x-1] - 1
+			end
+			if map[y][x-1] > 1 then
+				map[y][x-1] = map[y][x-1] - 1
+			end
+			if map[y+1][x-1] > 1 then
+				map[y+1][x-1] = map[y+1][x-1] - 1
+			end
+			if map[y-1][x+1] > 1 then
+				map[y-1][x+1] = map[y-1][x+1] - 1
+			end
+			if map[y][x+1] > 1 then
+				map[y][x+1] = map[y][x+1] - 1
+			end
+			if map[y+1][x+1] > 1 then
+				map[y+1][x+1] = map[y+1][x+1] - 1
+			end
 		end
-		if map[y][x] > 1 then
-			map[y][x] = map[y][x] - 1
-		end
-		if map[y+1][x] > 1 then
-			map[y+1][x] = map[y+1][x] - 1
-		end
-		if map[y-1][x-1] > 1 then
-			map[y-1][x-1] = map[y-1][x-1] - 1
-		end
-		if map[y][x-1] > 1 then
-			map[y][x-1] = map[y][x-1] - 1
-		end
-		if map[y+1][x-1] > 1 then
-			map[y+1][x-1] = map[y+1][x-1] - 1
-		end
-		if map[y-1][x+1] > 1 then
-			map[y-1][x+1] = map[y-1][x+1] - 1
-		end
-		if map[y][x+1] > 1 then
-			map[y][x+1] = map[y][x+1] - 1
-		end
-		if map[y+1][x+1] > 1 then
-			map[y+1][x+1] = map[y+1][x+1] - 1
-		end
-		
 	end
     
     
@@ -376,7 +378,7 @@ function love.update(dt)
 	--^^new one is lower. Only break the for loop if the next step outwards is lower than the previous one. 
     
     
-    if lighting == true then
+    if lighting == true and cave == true then
 		--I don't know why this part isn't using x/yrange or x/yrangenorm but it seems to work. Will look into this.
 		character.xpos = roundnum(character.x / tilesize)
 		character.ypos = roundnum(character.y / tilesize)
@@ -385,6 +387,7 @@ function love.update(dt)
 		--It honestly makes no sense to me any more. 
 		resolution = 500
 		for rotation = 1, resolution do
+			heightval = 0
 			for distance = 1, sightradius do
 				theta = 6.28 / 100 * rotation + 0.005
 				xdist = math.ceil(math.sin(theta)*distance)
@@ -457,11 +460,11 @@ function love.draw()
 	camera:set()
 	--Pretty straightforward code to determine what tiles to draw on the screen
 	love.graphics.setColor(0,0,0,255)
-	for x=xrangenorm-20,xrangenorm +20 do
-		for y=yrangenorm-20,yrangenorm +20 do
+	for x=xrangenorm-13,xrangenorm +13 do
+		for y=yrangenorm-13,yrangenorm +13 do
 			if y > ymin and y < ymax and x > xmin and x < xmax then
 				--map[x][y]=math.random(0,3)
-				if mapblocked[y][x].blocked == false or lighting == false then
+				if mapblocked[y][x].blocked == false or lighting == false or cave == false then
 					if map[y][x]>=0 then
 						if map[y][x]<=10 then
 							love.graphics.setColor(map[y][x]*3+200,map[y][x]*3+200,map[y][x]*3+200,255)
@@ -505,7 +508,7 @@ function love.draw()
 		for x=0,100,3 do
 			for y=0,100,3 do
 				if y+yrange-50 > ymin and y+yrange-50 < ymax and x+xrange-50 > xmin and x+xrange-50 < xmax then
-					if minimap[y+yrange-50][x+xrange-50].mapvisible == true then
+					--if minimap[y+yrange-50][x+xrange-50].mapvisible == true then
 						if map[y+yrange-50][x+xrange-50]>=0 then
 							if map[y+yrange-50][x+xrange-50]<=10 then
 								love.graphics.setColor(0,0,200,255)
@@ -516,7 +519,7 @@ function love.draw()
 							end
 							love.graphics.rectangle("fill",x*minimapsize+595+camera.x,y*minimapsize+5 + camera.y,minimapsize*3,minimapsize*3)
 						end
-					end
+					--end
 				end
 			end
 		end
