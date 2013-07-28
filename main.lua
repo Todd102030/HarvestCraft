@@ -19,10 +19,13 @@
 
 
 function love.load()
-
+	
+	characterimg = love.graphics.newImage("resources/tiles/character.png")
 	water = love.graphics.newImage("resources/tiles/Water.jpg")
 	grass = love.graphics.newImage("resources/tiles/Grass.jpg")
 	tree = love.graphics.newImage("resources/tiles/Tree.jpg")
+	horiBridge = love.graphics.newImage("resources/tiles/HoriBridge.jpg")
+	vertBridge = love.graphics.newImage("resources/tiles/VertBridge.jpg")
 
 	love.window.setCaption("Terrain Generation Alpha")
 	love.window.setMode(800,800)
@@ -127,14 +130,117 @@ function love.load()
 		
 		
 		
-		--[[for y = mapy - map[mapy][mapx], map[mapy][mapx] + mapy do
-			for x = map[mapy][mapx] - mapx, mapx + map[mapy][mapx] do
-				if y > ymin and y < ymax and x > xmin and x < xmax then
-					radius = math.floor(math.sqrt(math.pow(mapy - y,2) + math.pow(mapx - x,2))) 
-					map[y][x] = radius
+			
+		--end
+	end
+		
+	for i=1,1000 do
+	--drawBridge = false
+	--while drawBridge == false do 
+		foundGround = false
+		while foundGround == false do
+			mapy = math.random(ymin,ymax)
+			mapx = math.random(xmin,xmax)
+			if map[mapy][mapx]>10 then
+				foundGround = true
+			end
+		end
+		
+		--startBridgex = mapx
+		--startBridgey = mapy
+		madeBridge = false
+		previousGround = 200
+		startBridgex = 0
+		startBridgey = 0
+		endBridgex = 0
+		endBridgey = 0
+		for num = 1,25 do
+			randbridge = math.random(2)
+			if randbridge == 1 then
+				if mapy > ymin and mapy < ymax and mapx + num > xmin and mapx + num < xmax then
+					if previousGround >10 and map[mapy][mapx+num] <=10 then
+						startBridgex = mapx+num
+						startBridgey = mapy
+						previousGround = map[mapy][mapx+num]
+					end
+					if madeBridge == false and map[mapy][mapx+num]>10 and previousGround < 50 then
+						madeBridge = true
+						endBridgex = mapx+num
+						endBridgey = mapy
+						drawBridge = true
+						bridgeOrientation = 0 
+						
+					end
+				end
+			
+			else
+				if mapy + num > ymin and mapy + num < ymax and mapx > xmin and mapx < xmax then
+					if previousGround >10 and map[mapy+num][mapx] <=10 then
+						startBridgex = mapx
+						startBridgey = mapy+num
+						previousGround = map[mapy+num][mapx]
+					end
+					if madeBridge == false and map[mapy+num][mapx]>10 and previousGround < 50 then
+						madeBridge = true
+						endBridgex = mapx
+						endBridgey = mapy+num
+						drawBridge = true
+						bridgeOrientation = 1
+						
+					end
 				end
 			end
-		end]]--
+			
+			--[[elseif mapy - num > ymin and mapy - num < ymax and mapx > xmin and mapx < xmax then
+				if previousGround >10 and map[mapy-num][mapx] <=10 then
+					startBridgex = mapx
+					startBridgey = mapy-num
+					previousGround = map[mapy-num][mapx]
+				end
+				if madeBridge == false and map[mapy-num][mapx]>10 and previousGround < 50 then
+					madeBridge = true
+					endBridgex = mapx
+					endBridgey = mapy-num
+					drawBridge = true
+					
+				end
+			
+		
+			elseif mapy > ymin and mapy < ymax and mapx - num > xmin and mapx - num < xmax then
+				if previousGround >10 and map[mapy][mapx-num] <=10 then
+					startBridgex = mapx-num
+					startBridgey = mapy
+					previousGround = map[mapy][mapx-num]
+				end
+				if madeBridge == false and map[mapy][mapx-num]>10 and previousGround < 50 then
+					madeBridge = true
+					endBridgex = mapx-num
+					endBridgey = mapy
+					drawBridge = true
+					
+				end
+			end]]--
+		end
+		
+			
+		
+		if drawBridge == true and bridgeOrientation == 0 then
+			for y = startBridgey, endBridgey do
+				for x = startBridgex, endBridgex do
+					map[y][x] = 101
+				end
+			end
+			drawBridge = false
+		elseif drawBridge == true and bridgeOrientation == 1 then
+			for y = startBridgey, endBridgey do
+				for x = startBridgex, endBridgex do
+					map[y][x] = 102
+				end
+			end
+			drawBridge = false
+		end
+		
+		
 		
 	end
 	
@@ -481,6 +587,12 @@ function love.draw()
 						if map[y][x]==13 then
 							love.graphics.setColor(210,210,210,255)
 							love.graphics.draw(tree,x*tilesize, y*tilesize)
+						elseif map[y][x]==101 then
+							love.graphics.setColor(210,210,210,255)
+							love.graphics.draw(horiBridge,x*tilesize, y*tilesize)
+						elseif map[y][x]==102 then
+							love.graphics.setColor(210,210,210,255)
+							love.graphics.draw(vertBridge,x*tilesize, y*tilesize)
 						end
 						
 					end
@@ -536,8 +648,9 @@ function love.draw()
 		love.graphics.print("Minimap off", 150 +camera.x, 10+camera.y)
 	end
 	--A bunch of stats displayed on screen to make things easier to debug
-	love.graphics.setColor(0,0,0,255)
-	love.graphics.circle("fill",character.x,character.y,10)
+	love.graphics.setColor(255,255,255,255)
+	--love.graphics.draw(,x*tilesize, y*tilesize)
+	love.graphics.draw(characterimg,character.x,character.y)
 	
 	love.graphics.setColor(255,255,255,255)
 	love.graphics.print("Current FPS: "..tostring(love.timer.getFPS( )), 10+math.floor(camera.x), 10+math.floor(camera.y))
