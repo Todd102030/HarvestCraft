@@ -40,8 +40,8 @@ function love.load()
 	character.y = 400
 	
 	--variables to aid in making the camera follow the character; xrange
-	xrange = character.x / tilesize
-	yrange = character.y / tilesize
+	xrange = (character.x + 16) / tilesize
+	yrange = (character.y + 16) / tilesize
 	
 	
 	--variable that determines whether or not to use the lighting engine
@@ -83,7 +83,7 @@ function love.load()
 	
 	--basic terrain generation algorithm
 	--needs more detail
-	for i=1,1000 do
+	for i=1,3000 do
 		mapy = math.random(ymin,ymax)
 		mapx = math.random(xmin,xmax)
 		map[mapy][mapx]=math.random(1,20)
@@ -123,121 +123,102 @@ function love.load()
 					if map[y][x] < 0 then
 						map[y][x] = 0
 					end
+					if map[y][x] > 24 then
+						map[y][x] = 24
+					end
 				end
+				
 			end
 		end
 		
-		
-		
-		
-			
 		--end
 	end
 		
-	for i=1,1000 do
+	
+		
+	for i=1,400 do
 	--drawBridge = false
 	--while drawBridge == false do 
 		foundGround = false
 		while foundGround == false do
-			mapy = math.random(ymin,ymax)
-			mapx = math.random(xmin,xmax)
-			if map[mapy][mapx]>10 then
+			mapyBridge = math.random(ymin,ymax)
+			mapxBridge = math.random(xmin,xmax)
+			if map[mapyBridge][mapxBridge]>10 then
 				foundGround = true
 			end
 		end
 		
 		--startBridgex = mapx
 		--startBridgey = mapy
+		startBridge = false
 		madeBridge = false
-		previousGround = 200
+		previousGround = map[mapyBridge][mapxBridge]
 		startBridgex = 0
 		startBridgey = 0
 		endBridgex = 0
 		endBridgey = 0
-		for num = 1,25 do
-			randbridge = math.random(2)
-			if randbridge == 1 then
-				if mapy > ymin and mapy < ymax and mapx + num > xmin and mapx + num < xmax then
-					if previousGround >10 and map[mapy][mapx+num] <=10 then
-						startBridgex = mapx+num
-						startBridgey = mapy
-						previousGround = map[mapy][mapx+num]
+		--countBridge=0
+		randbridge = math.random(2)
+		if randbridge == 1 then
+			for num = 1,25 do
+				if mapyBridge > ymin and mapyBridge < ymax and mapxBridge + num > xmin and mapxBridge + num < xmax then
+					if previousGround >10 and map[mapyBridge][mapxBridge+num] <10 and startBridge == false then
+						startBridgex = mapxBridge+num - 1
+						startBridgey = mapyBridge
+						previousGround = map[mapyBridge][mapxBridge+num]
+						--map[mapy][mapx+num] = 101
+						startBridge = true
 					end
-					if madeBridge == false and map[mapy][mapx+num]>10 and previousGround < 50 then
+					if madeBridge == false and map[mapyBridge][mapxBridge+num]>10 and previousGround < 10 then
 						madeBridge = true
-						endBridgex = mapx+num
-						endBridgey = mapy
+						endBridgex = mapxBridge+num
+						endBridgey = mapyBridge
 						drawBridge = true
 						bridgeOrientation = 0 
-						
-					end
-				end
-			
-			else
-				if mapy + num > ymin and mapy + num < ymax and mapx > xmin and mapx < xmax then
-					if previousGround >10 and map[mapy+num][mapx] <=10 then
-						startBridgex = mapx
-						startBridgey = mapy+num
-						previousGround = map[mapy+num][mapx]
-					end
-					if madeBridge == false and map[mapy+num][mapx]>10 and previousGround < 50 then
-						madeBridge = true
-						endBridgex = mapx
-						endBridgey = mapy+num
-						drawBridge = true
-						bridgeOrientation = 1
-						
+						--map[mapy][mapx+num] = 102
+						break
 					end
 				end
 			end
-			
-			--[[elseif mapy - num > ymin and mapy - num < ymax and mapx > xmin and mapx < xmax then
-				if previousGround >10 and map[mapy-num][mapx] <=10 then
-					startBridgex = mapx
-					startBridgey = mapy-num
-					previousGround = map[mapy-num][mapx]
+		else
+			for num = 1,25 do
+				if mapyBridge + num > ymin and mapyBridge + num < ymax and mapxBridge > xmin and mapxBridge < xmax then
+					if previousGround >10 and map[mapyBridge+num][mapxBridge] <10 and startBridge == false then
+						startBridgex = mapxBridge
+						startBridgey = mapyBridge+num - 1
+						previousGround = map[mapyBridge+num][mapxBridge]
+						--map[mapy][mapx+num] = 101
+						startBridge = true
+					end
+					if madeBridge == false and map[mapyBridge+num][mapxBridge]>10 and previousGround < 10 then
+						madeBridge = true
+						endBridgex = mapxBridge
+						endBridgey = mapyBridge+num
+						drawBridge = true
+						bridgeOrientation = 1 
+						--map[mapy][mapx+num] = 102
+						break
+					end
 				end
-				if madeBridge == false and map[mapy-num][mapx]>10 and previousGround < 50 then
-					madeBridge = true
-					endBridgex = mapx
-					endBridgey = mapy-num
-					drawBridge = true
-					
-				end
-			
-		
-			elseif mapy > ymin and mapy < ymax and mapx - num > xmin and mapx - num < xmax then
-				if previousGround >10 and map[mapy][mapx-num] <=10 then
-					startBridgex = mapx-num
-					startBridgey = mapy
-					previousGround = map[mapy][mapx-num]
-				end
-				if madeBridge == false and map[mapy][mapx-num]>10 and previousGround < 50 then
-					madeBridge = true
-					endBridgex = mapx-num
-					endBridgey = mapy
-					drawBridge = true
-					
-				end
-			end]]--
+			end
 		end
 		
-			
 		
-		if drawBridge == true and bridgeOrientation == 0 then
-			for y = startBridgey, endBridgey do
-				for x = startBridgex, endBridgex do
-					map[y][x] = 101
-				end
+		if drawBridge == true and bridgeOrientation == 0 and endBridgex - startBridgex > 3 then			
+			for x = startBridgex, endBridgex do
+				map[endBridgey][x] = 101
 			end
-			drawBridge = false
-		elseif drawBridge == true and bridgeOrientation == 1 then
-			for y = startBridgey, endBridgey do
-				for x = startBridgex, endBridgex do
-					map[y][x] = 102
-				end
+			--drawBridge = false
+			--madeBridge = false
+			--countBridge = 0
+		end
+		if drawBridge == true and bridgeOrientation == 1 and endBridgey - startBridgey > 3 then
+			for y = startBridgey, endBridgey do	
+				map[y][endBridgex] = 102
 			end
-			drawBridge = false
+			--drawBridge = false
+			--madeBridge = false
+			--countBridge = 0
 		end
 		
 		
@@ -245,6 +226,7 @@ function love.load()
 	end
 	
 	
+
 	--[[
 	for y = ymin, ymax do
 		for x = xmax, xmax do
@@ -325,22 +307,28 @@ function love.update(dt)
 	
 	togglecount = togglecount + dt
 	
+	--and map[yrange][xrange] >=10 
+	
 	--Character movement, pretty straightforward
 	if love.keyboard.isDown("right") then 
-		character.x = character.x + charspeed
-		
+		if map[yrange][xrange+1] >=10 then
+			character.x = character.x + charspeed
+		end
     end
 	if love.keyboard.isDown("left") then 
-		character.x = character.x - charspeed
-		
+		if map[yrange][xrange-1] >=10 then
+			character.x = character.x - charspeed
+		end
     end
     if love.keyboard.isDown("up") then 
-		character.y = character.y - charspeed
-		
+		if map[yrange-1][xrange] >=10 then
+			character.y = character.y - charspeed
+		end
     end
     if love.keyboard.isDown("down") then 
-		character.y = character.y + charspeed
-		
+		if map[yrange+1][xrange] >=10 then
+			character.y = character.y + charspeed
+		end
     end
     
     --Keeps character bound within a certain area of the screen
@@ -364,10 +352,10 @@ function love.update(dt)
     
     --xrange and yrange are variables that show where the character is
     --on the full map
-    xrangefloat= character.x / tilesize
+    xrangefloat= (character.x + 16) / tilesize
 	xrange = math.floor(xrangefloat)
     
-    yrangefloat= character.y / tilesize
+    yrangefloat= (character.y + 16) / tilesize
 	yrange = math.floor(yrangefloat)
 	
 	--these will be 
@@ -610,6 +598,8 @@ function love.draw()
 					--love.graphics.setColor(0,0,0,90)
 					--love.graphics.rectangle("fill",x*tilesize,y*tilesize,tilesize,tilesize)
 				end
+				
+				love.graphics.print(map[y][x], x*tilesize +10, y*tilesize+10)
 				
 				mapblocked[y][x].blocked = true
 			end
