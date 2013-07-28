@@ -21,17 +21,17 @@
 function love.load()
 	
 	characterimg = love.graphics.newImage("resources/tiles/character.png")
-	water = love.graphics.newImage("resources/tiles/Water.jpg")
-	grass = love.graphics.newImage("resources/tiles/Grass.jpg")
-	tree = love.graphics.newImage("resources/tiles/Tree.jpg")
-	horiBridge = love.graphics.newImage("resources/tiles/HoriBridge.jpg")
-	vertBridge = love.graphics.newImage("resources/tiles/VertBridge.jpg")
+	water = love.graphics.newImage("resources/tiles/Water.png")
+	grass = love.graphics.newImage("resources/tiles/Grass.png")
+	tree = love.graphics.newImage("resources/tiles/Tree.png")
+	horiBridge = love.graphics.newImage("resources/tiles/HoriBridge.png")
+	vertBridge = love.graphics.newImage("resources/tiles/VertBridge.png")
 
 	love.window.setCaption("Terrain Generation Alpha")
 	love.window.setMode(800,800)
 
 	--length/width of map and tile squares 
-	minimapsize = 2
+	minimapsize = 4
 	tilesize = 32
 
 	--main character
@@ -162,14 +162,14 @@ function love.load()
 		if randbridge == 1 then
 			for num = 1,25 do
 				if mapyBridge > ymin and mapyBridge < ymax and mapxBridge + num > xmin and mapxBridge + num < xmax then
-					if previousGround >10 and map[mapyBridge][mapxBridge+num] <10 and startBridge == false then
+					if previousGround >10 and map[mapyBridge][mapxBridge+num] <=10 and startBridge == false then
 						startBridgex = mapxBridge+num - 1
 						startBridgey = mapyBridge
 						previousGround = map[mapyBridge][mapxBridge+num]
 						--map[mapy][mapx+num] = 101
 						startBridge = true
 					end
-					if madeBridge == false and map[mapyBridge][mapxBridge+num]>10 and previousGround < 10 then
+					if madeBridge == false and map[mapyBridge][mapxBridge+num]>10 and previousGround <= 10 then
 						madeBridge = true
 						endBridgex = mapxBridge+num
 						endBridgey = mapyBridge
@@ -183,14 +183,14 @@ function love.load()
 		else
 			for num = 1,25 do
 				if mapyBridge + num > ymin and mapyBridge + num < ymax and mapxBridge > xmin and mapxBridge < xmax then
-					if previousGround >10 and map[mapyBridge+num][mapxBridge] <10 and startBridge == false then
+					if previousGround >10 and map[mapyBridge+num][mapxBridge] <=10 and startBridge == false then
 						startBridgex = mapxBridge
 						startBridgey = mapyBridge+num - 1
 						previousGround = map[mapyBridge+num][mapxBridge]
 						--map[mapy][mapx+num] = 101
 						startBridge = true
 					end
-					if madeBridge == false and map[mapyBridge+num][mapxBridge]>10 and previousGround < 10 then
+					if madeBridge == false and map[mapyBridge+num][mapxBridge]>10 and previousGround <= 10 then
 						madeBridge = true
 						endBridgex = mapxBridge
 						endBridgey = mapyBridge+num
@@ -207,6 +207,7 @@ function love.load()
 		if drawBridge == true and bridgeOrientation == 0 and endBridgex - startBridgex > 3 then			
 			for x = startBridgex, endBridgex do
 				map[endBridgey][x] = 101
+				map[endBridgey+1][x] = 101
 			end
 			--drawBridge = false
 			--madeBridge = false
@@ -215,6 +216,7 @@ function love.load()
 		if drawBridge == true and bridgeOrientation == 1 and endBridgey - startBridgey > 3 then
 			for y = startBridgey, endBridgey do	
 				map[y][endBridgex] = 102
+				map[y][endBridgex+1] = 102
 			end
 			--drawBridge = false
 			--madeBridge = false
@@ -303,7 +305,7 @@ end
 function love.update(dt)
 	
 	--Makes character move based on Delta t so movement is the same no matter the framerate
-	charspeed = 350*dt
+	charspeed = 180*dt
 	
 	togglecount = togglecount + dt
 	
@@ -333,20 +335,20 @@ function love.update(dt)
     
     --Keeps character bound within a certain area of the screen
     if character.y > 450+camera.y then
-		camera.y = camera.y + charspeed
+		camera.y = roundnum(camera.y + charspeed)
 		character.y = 450+camera.y
 	end
 	if character.y < 350+camera.y then
-		camera.y = camera.y - charspeed
+		camera.y = roundnum(camera.y - charspeed)
 		character.y = 350+camera.y
 	end
 	if character.x > 450+camera.x then
-		camera.x = camera.x + charspeed
+		camera.x = roundnum(camera.x + charspeed)
 		character.x = 450+camera.x
 		
 	end
 	if character.x < 350+camera.x then
-		camera.x = camera.x - charspeed
+		camera.x = roundnum(camera.x - charspeed)
 		character.x = 350+camera.x
 	end
     
@@ -599,7 +601,7 @@ function love.draw()
 					--love.graphics.rectangle("fill",x*tilesize,y*tilesize,tilesize,tilesize)
 				end
 				
-				love.graphics.print(map[y][x], x*tilesize +10, y*tilesize+10)
+				--love.graphics.print(map[y][x], x*tilesize +10, y*tilesize+10)
 				
 				mapblocked[y][x].blocked = true
 			end
@@ -613,19 +615,21 @@ function love.draw()
 		
 		
 		--MINIMAP DRAWING
-		for x=0,100,3 do
-			for y=0,100,3 do
-				if y+yrangenorm-50 > ymin and y+yrangenorm-50 < ymax and x+xrangenorm-50 > xmin and x+xrangenorm-50 < xmax then
+		for x=0,50 do
+			for y=0,50 do
+				if y+yrangenorm-25 > ymin and y+yrangenorm-25 < ymax and x+xrangenorm-25 > xmin and x+xrangenorm-25 < xmax then
 					--if minimap[y+yrange-50][x+xrange-50].mapvisible == true then
-						if map[y+yrangenorm-50][x+xrangenorm-50]>=0 then
-							if map[y+yrangenorm-50][x+xrangenorm-50]<=10 then
-								love.graphics.setColor(0,0,200,255)
-							elseif map[y+yrangenorm-50][x+xrangenorm-50]<=50 then
-								love.graphics.setColor(140,200,80,255)
+						if map[y+yrangenorm-25][x+xrangenorm-25]>=0 then
+							if map[y+yrangenorm-25][x+xrangenorm-25]<=10 then
+								love.graphics.setColor(65,150,240,255)
+							elseif map[y+yrangenorm-25][x+xrangenorm-25]<=50 then
+								love.graphics.setColor(75,190,60,255)
+							elseif map[y+yrangenorm-25][x+xrangenorm-25]==101 or map[y+yrangenorm-25][x+xrangenorm-25]==102 then
+								love.graphics.setColor(120,95,0,255)
 							else
 								love.graphics.setColor(0,255,0,255)
 							end
-							love.graphics.rectangle("fill",x*minimapsize+595+camera.x,y*minimapsize+5 + camera.y,minimapsize*3,minimapsize*3)
+							love.graphics.rectangle("fill",x*minimapsize+595+camera.x,y*minimapsize+5 + camera.y,minimapsize,minimapsize)
 						end
 					--end
 				end
