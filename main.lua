@@ -42,7 +42,11 @@
 function love.load()
 	
 	characterimg = love.graphics.newImage("resources/tiles/character.png")
-	water = love.graphics.newImage("resources/tiles/Water.png")
+	water1 = love.graphics.newImage("resources/tiles/Water1.png")
+	water2 = love.graphics.newImage("resources/tiles/Water2.png")
+	water3 = love.graphics.newImage("resources/tiles/Water3.png")
+	water4 = love.graphics.newImage("resources/tiles/Water4.png")
+	water=water1
 	grass = love.graphics.newImage("resources/tiles/Grass.png")
 	tree = love.graphics.newImage("resources/tiles/Tree.png")
 	horiBridge = love.graphics.newImage("resources/tiles/HoriBridge.png")
@@ -85,6 +89,7 @@ function love.load()
 	minimapdraw = true
 	lighting = false
 	
+	watercount = 0
 	togglecount = 0
 	
 	--initialize a bunch of grids
@@ -370,6 +375,24 @@ end
 
 function love.update(dt)
 	
+	watercount = watercount + dt
+	watertemp = watercount
+	if watertemp <= 0.1 then
+		water = water1
+	elseif watertemp <= 0.2 then
+		water = water2
+	elseif watertemp <= 0.3 then
+		water = water3
+	elseif watertemp <= 0.4 then
+		water = water4
+	end
+	
+	
+	
+	if watercount > 0.4 then
+		watercount = 0.05
+	end
+	
 	--Makes character move based on Delta t so movement is the same no matter the framerate
 	charspeed = 380*dt
 	
@@ -378,22 +401,22 @@ function love.update(dt)
 	--and map[yrange][xrange] >=10 
 	
 	--Character movement, pretty straightforward
-	if love.keyboard.isDown("right") then 
+	if love.keyboard.isDown("d") then 
 		if map[yrange][xrange+1] >=10 then
 			character.x = character.x + charspeed
 		end
     end
-	if love.keyboard.isDown("left") then 
+	if love.keyboard.isDown("a") then 
 		if map[yrange][xrange-1] >=10 then
 			character.x = character.x - charspeed
 		end
     end
-    if love.keyboard.isDown("up") then 
+    if love.keyboard.isDown("w") then 
 		if map[yrange-1][xrange] >=10 then
 			character.y = character.y - charspeed
 		end
     end
-    if love.keyboard.isDown("down") then 
+    if love.keyboard.isDown("s") then 
 		if map[yrange+1][xrange] >=10 then
 			character.y = character.y + charspeed
 		end
