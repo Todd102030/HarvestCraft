@@ -18,6 +18,27 @@
 --Make it so that the map doesn't jitter as you walk
 
 
+--TERRAIN STUFF
+--seriously need wells
+--teepees too
+--bushes
+--flowers
+--boulders
+--long grass (things you can walk behind or in front of need to be layered correctly. Might need to see if there's laying options in Love)
+
+--BIOME TYPES
+--snowy 
+--forest
+--spooky
+--islands (kinda done)
+--desert
+--alien/space biome
+--swamp
+
+
+--Add a new array so that one stores height values and one stores item values. Or use the Table data style of Lua and 
+--^^stick them both in one array
+
 function love.load()
 	
 	characterimg = love.graphics.newImage("resources/tiles/character.png")
@@ -26,6 +47,8 @@ function love.load()
 	tree = love.graphics.newImage("resources/tiles/Tree.png")
 	horiBridge = love.graphics.newImage("resources/tiles/HoriBridge.png")
 	vertBridge = love.graphics.newImage("resources/tiles/VertBridge.png")
+	
+	waterLadder = love.graphics.newImage("resources/tiles/WaterLadder.jpg")
 
 	love.window.setCaption("Terrain Generation Alpha")
 	love.window.setMode(800,800)
@@ -206,8 +229,12 @@ function love.load()
 		
 		if drawBridge == true and bridgeOrientation == 0 and endBridgex - startBridgex > 3 then			
 			for x = startBridgex, endBridgex do
-				map[endBridgey][x] = 101
-				map[endBridgey+1][x] = 101
+				if endBridgex - startBridgex < 13 then
+					map[endBridgey][x] = 101
+				else
+					map[endBridgey][x] = 101
+					map[endBridgey+1][x] = 101
+				end
 			end
 			--drawBridge = false
 			--madeBridge = false
@@ -215,8 +242,12 @@ function love.load()
 		end
 		if drawBridge == true and bridgeOrientation == 1 and endBridgey - startBridgey > 3 then
 			for y = startBridgey, endBridgey do	
-				map[y][endBridgex] = 102
-				map[y][endBridgex+1] = 102
+				if endBridgey - startBridgey < 13 then
+					map[y][endBridgex] = 102
+				else
+					map[y][endBridgex] = 102
+					map[y][endBridgex+1] = 102
+				end
 			end
 			--drawBridge = false
 			--madeBridge = false
@@ -228,6 +259,41 @@ function love.load()
 	end
 	
 	
+	for i=1,100 do
+	--drawBridge = false
+	--while drawBridge == false do 
+		foundGround = false
+		while foundGround == false do
+			mapyPond = math.random(ymin,ymax)
+			mapxPond = math.random(xmin,xmax)
+			countPond = 0
+			
+			for y = -3 , 5 do
+				for x = -4 , 4 do
+					if mapyPond + y > ymin and mapyPond + y < ymax and mapxPond + x > xmin and mapxPond + x < xmax then
+						if map[mapyPond + y][mapxPond + x]>10 then
+							countPond = countPond + 1
+						end
+					end
+				end
+			end
+			
+			if countPond == 81 then
+				foundGround = true
+			end
+		end
+		for y = 1 , 3 do
+			for x = -2 , 2 do
+				if mapyPond - y > ymin and mapyPond + y < ymax and mapxPond + x > xmin and mapxPond + x < xmax then
+					map[mapyPond + y][mapxPond + x] = 10
+				end
+			end
+		end
+		map[mapyPond][mapxPond] = 103
+		
+				
+		
+	end
 
 	--[[
 	for y = ymin, ymax do
@@ -305,7 +371,7 @@ end
 function love.update(dt)
 	
 	--Makes character move based on Delta t so movement is the same no matter the framerate
-	charspeed = 180*dt
+	charspeed = 380*dt
 	
 	togglecount = togglecount + dt
 	
@@ -583,6 +649,9 @@ function love.draw()
 						elseif map[y][x]==102 then
 							love.graphics.setColor(210,210,210,255)
 							love.graphics.draw(vertBridge,x*tilesize, y*tilesize)
+						elseif map[y][x]==103 then
+							love.graphics.setColor(210,210,210,255)
+							love.graphics.draw(waterLadder,x*tilesize, y*tilesize)
 						end
 						
 					end
@@ -611,7 +680,7 @@ function love.draw()
 	if minimapdraw==true then
 	
 		love.graphics.setColor(0,0,0,255)
-		love.graphics.rectangle("fill", 590+camera.x, 5+camera.y, 210, 210)
+		love.graphics.rectangle("fill", 585+camera.x, camera.y, 215, 215)
 		
 		
 		--MINIMAP DRAWING
@@ -629,7 +698,7 @@ function love.draw()
 							else
 								love.graphics.setColor(0,255,0,255)
 							end
-							love.graphics.rectangle("fill",x*minimapsize+595+camera.x,y*minimapsize+5 + camera.y,minimapsize,minimapsize)
+							love.graphics.rectangle("fill",x*minimapsize+590+camera.x,y*minimapsize+5 + camera.y,minimapsize,minimapsize)
 						end
 					--end
 				end
