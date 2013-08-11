@@ -48,9 +48,7 @@ function love.load()
 	water4 = love.graphics.newImage("resources/tiles/Water4.png")
 	water=water1
 	grass = love.graphics.newImage("resources/tiles/Grass.png")
-	beach = love.graphics.newImage("resources/tiles/Beach.png")
 	tree = love.graphics.newImage("resources/tiles/Tree.png")
-	longGrass = love.graphics.newImage("resources/tiles/Longgrass.png")
 	horiBridge = love.graphics.newImage("resources/tiles/HoriBridge.png")
 	vertBridge = love.graphics.newImage("resources/tiles/VertBridge.png")
 	
@@ -98,16 +96,13 @@ function love.load()
 	map={}
 	mapblocked={}
 	minimap={}
-	mapheight={}
 	for i=ymin,ymax do
 		map[i]={}
 		mapblocked[i]={}
 		minimap[i]={}
-		mapheight[i]={}
 		for n=xmin,xmax do
 			mapblocked[i][n] = {}
-			map[i][n]=1
-			mapheight[i][n]=1
+			map[i][n]=0
 			minimap[i][n]={}
 			minimap[i][n].mapvisible = false
 			
@@ -119,11 +114,10 @@ function love.load()
 	for i=1,3000 do
 		mapy = math.random(ymin,ymax)
 		mapx = math.random(xmin,xmax)
-		mapheight[mapy][mapx]=math.random(1,20)
+		map[mapy][mapx]=math.random(1,20)
 		
 		xrand = math.random(4,10)
-		--yrand = math.random(4,10)
-		yrand=xrand
+		yrand = math.random(4,10)
 		
 		for y = mapy - yrand, mapy + yrand do
 			for x = mapx - xrand, mapx + xrand do
@@ -150,23 +144,15 @@ function love.load()
 					
 					
 					if mapx == x and mapy == y then
-						mapheight[y][x] = mapheight[y-1][x]
+						map[y][x] = map[y-1][x]
 					else
-						mapheight[y][x] = mapheight[y][x] + radius
+						map[y][x] = map[y][x] + radius
 					end
-					if mapheight[y][x] < 0 then
-						mapheight[y][x] = 0
+					if map[y][x] < 0 then
+						map[y][x] = 0
 					end
-					if mapheight[y][x] > 24 then
-						mapheight[y][x] = 24
-					end
-					if mapheight[y][x] < 10 then
-						map[y][x] = 1
-					elseif mapheight[y][x] < 24 then
-						map[y][x] = 2
-					end
-					if mapheight[y][x] == 9 or mapheight[y][x] == 8 or mapheight[y][x] == 7 or mapheight[y][x] == 6 then
-						map[y][x] = 4
+					if map[y][x] > 24 then
+						map[y][x] = 24
 					end
 				end
 				
@@ -185,7 +171,7 @@ function love.load()
 		while foundGround == false do
 			mapyBridge = math.random(ymin,ymax)
 			mapxBridge = math.random(xmin,xmax)
-			if map[mapyBridge][mapxBridge]==2 then
+			if map[mapyBridge][mapxBridge]>10 then
 				foundGround = true
 			end
 		end
@@ -204,14 +190,14 @@ function love.load()
 		if randbridge == 1 then
 			for num = 1,25 do
 				if mapyBridge > ymin and mapyBridge < ymax and mapxBridge + num > xmin and mapxBridge + num < xmax then
-					if previousGround ==2 and map[mapyBridge][mapxBridge+num] ==1 and startBridge == false then
+					if previousGround >10 and map[mapyBridge][mapxBridge+num] <=10 and startBridge == false then
 						startBridgex = mapxBridge+num - 1
 						startBridgey = mapyBridge
 						previousGround = map[mapyBridge][mapxBridge+num]
 						--map[mapy][mapx+num] = 101
 						startBridge = true
 					end
-					if madeBridge == false and map[mapyBridge][mapxBridge+num]==2 and previousGround ==1 then
+					if madeBridge == false and map[mapyBridge][mapxBridge+num]>10 and previousGround <= 10 then
 						madeBridge = true
 						endBridgex = mapxBridge+num
 						endBridgey = mapyBridge
@@ -225,14 +211,14 @@ function love.load()
 		else
 			for num = 1,25 do
 				if mapyBridge + num > ymin and mapyBridge + num < ymax and mapxBridge > xmin and mapxBridge < xmax then
-					if previousGround ==2 and map[mapyBridge+num][mapxBridge] ==1 and startBridge == false then
+					if previousGround >10 and map[mapyBridge+num][mapxBridge] <=10 and startBridge == false then
 						startBridgex = mapxBridge
 						startBridgey = mapyBridge+num - 1
 						previousGround = map[mapyBridge+num][mapxBridge]
 						--map[mapy][mapx+num] = 101
 						startBridge = true
 					end
-					if madeBridge == false and map[mapyBridge+num][mapxBridge]==2 and previousGround ==1 then
+					if madeBridge == false and map[mapyBridge+num][mapxBridge]>10 and previousGround <= 10 then
 						madeBridge = true
 						endBridgex = mapxBridge
 						endBridgey = mapyBridge+num
@@ -249,10 +235,10 @@ function love.load()
 		if drawBridge == true and bridgeOrientation == 0 and endBridgex - startBridgex > 3 then			
 			for x = startBridgex, endBridgex do
 				if endBridgex - startBridgex < 13 then
-					map[endBridgey][x] = 5
+					map[endBridgey][x] = 101
 				else
-					map[endBridgey][x] = 5
-					map[endBridgey+1][x] = 5
+					map[endBridgey][x] = 101
+					map[endBridgey+1][x] = 101
 				end
 			end
 			--drawBridge = false
@@ -262,10 +248,10 @@ function love.load()
 		if drawBridge == true and bridgeOrientation == 1 and endBridgey - startBridgey > 3 then
 			for y = startBridgey, endBridgey do	
 				if endBridgey - startBridgey < 13 then
-					map[y][endBridgex] = 6
+					map[y][endBridgex] = 102
 				else
-					map[y][endBridgex] = 6
-					map[y][endBridgex+1] = 6
+					map[y][endBridgex] = 102
+					map[y][endBridgex+1] = 102
 				end
 			end
 			--drawBridge = false
@@ -279,7 +265,8 @@ function love.load()
 	
 	
 	for i=1,100 do
-
+	--drawBridge = false
+	--while drawBridge == false do 
 		foundGround = false
 		while foundGround == false do
 			mapyPond = math.random(ymin,ymax)
@@ -289,7 +276,7 @@ function love.load()
 			for y = -3 , 5 do
 				for x = -4 , 4 do
 					if mapyPond + y > ymin and mapyPond + y < ymax and mapxPond + x > xmin and mapxPond + x < xmax then
-						if map[mapyPond + y][mapxPond + x]==2 then
+						if map[mapyPond + y][mapxPond + x]>10 then
 							countPond = countPond + 1
 						end
 					end
@@ -303,33 +290,16 @@ function love.load()
 		for y = 1 , 3 do
 			for x = -2 , 2 do
 				if mapyPond - y > ymin and mapyPond + y < ymax and mapxPond + x > xmin and mapxPond + x < xmax then
-					map[mapyPond + y][mapxPond + x] = 1
-					mapheight[mapyPond + y][mapxPond + x] = 5
+					map[mapyPond + y][mapxPond + x] = 10
 				end
 			end
 		end
-		map[mapyPond][mapxPond] = 7
+		map[mapyPond][mapxPond] = 103
 		
 				
 		
 	end
-	
-	
-	for i=1,5000 do
-		mapyTree = math.random(ymin,ymax)
-		mapxTree = math.random(xmin,xmax)
-		if map[mapxTree][mapyTree]==2 then
-			map[mapxTree][mapyTree]=3
-		end
-	end
 
-	for i=1,70000 do
-		mapyTree = math.random(ymin,ymax)
-		mapxTree = math.random(xmin,xmax)
-		if map[mapxTree][mapyTree]==2 then
-			map[mapxTree][mapyTree]=8
-		end
-	end
 	--[[
 	for y = ymin, ymax do
 		for x = xmax, xmax do
@@ -432,24 +402,24 @@ function love.update(dt)
 	
 	--Character movement, pretty straightforward
 	if love.keyboard.isDown("d") then 
-		--if map[yrange][xrange+1] ==2 then
+		if map[yrange][xrange+1] >=10 then
 			character.x = character.x + charspeed
-		--end
+		end
     end
 	if love.keyboard.isDown("a") then 
-		--if map[yrange][xrange-1] ==2 then
+		if map[yrange][xrange-1] >=10 then
 			character.x = character.x - charspeed
-		--end
+		end
     end
     if love.keyboard.isDown("w") then 
-		--if map[yrange-1][xrange] ==2 then
+		if map[yrange-1][xrange] >=10 then
 			character.y = character.y - charspeed
-		--end
+		end
     end
     if love.keyboard.isDown("s") then 
-		--if map[yrange+1][xrange] ==2 then
+		if map[yrange+1][xrange] >=10 then
 			character.y = character.y + charspeed
-		--end
+		end
     end
     
     --Keeps character bound within a certain area of the screen
@@ -516,32 +486,32 @@ function love.update(dt)
 		y = math.floor((camera.y + ymouse) / tilesize)---yrangenorm --math.floor(mapy/tilesize)+yrangenorm-tilesize
 		x = math.floor((camera.x + xmouse) / tilesize)---xrangenorm --math.floor(mapx/tilesize)+xrangenorm-tilesize
 		if y > ymin and y < ymax and x > xmin and x < xmax then
-			if mapheight[y-1][x] < 25 then
-				mapheight[y-1][x] = mapheight[y-1][x] + 1
+			if map[y-1][x] < 25 then
+				map[y-1][x] = map[y-1][x] + 1
 			end
-			if mapheight[y][x] < 25 then
-				mapheight[y][x] = mapheight[y][x] + 1
+			if map[y][x] < 25 then
+				map[y][x] = map[y][x] + 1
 			end
-			if mapheight[y+1][x] < 25 then
-				mapheight[y+1][x] = mapheight[y+1][x] + 1
+			if map[y+1][x] < 25 then
+				map[y+1][x] = map[y+1][x] + 1
 			end
-			if mapheight[y-1][x-1] < 25 then
-				mapheight[y-1][x-1] = mapheight[y-1][x-1] + 1
+			if map[y-1][x-1] < 25 then
+				map[y-1][x-1] = map[y-1][x-1] + 1
 			end
-			if mapheight[y][x-1] < 25 then
-				mapheight[y][x-1] = mapheight[y][x-1] + 1
+			if map[y][x-1] < 25 then
+				map[y][x-1] = map[y][x-1] + 1
 			end
-			if mapheight[y+1][x-1] < 25 then
-				mapheight[y+1][x-1] = mapheight[y+1][x-1] + 1
+			if map[y+1][x-1] < 25 then
+				map[y+1][x-1] = map[y+1][x-1] + 1
 			end
-			if mapheight[y-1][x+1] < 25 then
-				mapheight[y-1][x+1] = mapheight[y-1][x+1] + 1
+			if map[y-1][x+1] < 25 then
+				map[y-1][x+1] = map[y-1][x+1] + 1
 			end
-			if mapheight[y][x+1] < 25 then
-				mapheight[y][x+1] = mapheight[y][x+1] + 1
+			if map[y][x+1] < 25 then
+				map[y][x+1] = map[y][x+1] + 1
 			end
-			if mapheight[y+1][x+1] < 25 then
-				mapheight[y+1][x+1] = mapheight[y+1][x+1] + 1
+			if map[y+1][x+1] < 25 then
+				map[y+1][x+1] = map[y+1][x+1] + 1
 			end
 		end
 		
@@ -554,32 +524,32 @@ function love.update(dt)
 		y = math.floor((camera.y + ymouse) / tilesize)---yrangenorm --math.floor(mapy/tilesize)+yrangenorm-tilesize
 		x = math.floor((camera.x + xmouse) / tilesize)---xrangenorm --math.floor(mapx/tilesize)+xrangenorm-tilesize
 		if y > ymin and y < ymax and x > xmin and x < xmax then
-			if mapheight[y-1][x] > 1 then
-				mapheight[y-1][x] = mapheight[y-1][x] - 1
+			if map[y-1][x] > 1 then
+				map[y-1][x] = map[y-1][x] - 1
 			end
-			if mapheight[y][x] > 1 then
-				mapheight[y][x] = mapheight[y][x] - 1
+			if map[y][x] > 1 then
+				map[y][x] = map[y][x] - 1
 			end
-			if mapheight[y+1][x] > 1 then
-				mapheight[y+1][x] = mapheight[y+1][x] - 1
+			if map[y+1][x] > 1 then
+				map[y+1][x] = map[y+1][x] - 1
 			end
-			if mapheight[y-1][x-1] > 1 then
-				mapheight[y-1][x-1] = mapheight[y-1][x-1] - 1
+			if map[y-1][x-1] > 1 then
+				map[y-1][x-1] = map[y-1][x-1] - 1
 			end
-			if mapheight[y][x-1] > 1 then
-				mapheight[y][x-1] = mapheight[y][x-1] - 1
+			if map[y][x-1] > 1 then
+				map[y][x-1] = map[y][x-1] - 1
 			end
-			if mapheight[y+1][x-1] > 1 then
-				mapheight[y+1][x-1] = mapheight[y+1][x-1] - 1
+			if map[y+1][x-1] > 1 then
+				map[y+1][x-1] = map[y+1][x-1] - 1
 			end
-			if mapheight[y-1][x+1] > 1 then
-				mapheight[y-1][x+1] = mapheight[y-1][x+1] - 1
+			if map[y-1][x+1] > 1 then
+				map[y-1][x+1] = map[y-1][x+1] - 1
 			end
-			if mapheight[y][x+1] > 1 then
-				mapheight[y][x+1] = mapheight[y][x+1] - 1
+			if map[y][x+1] > 1 then
+				map[y][x+1] = map[y][x+1] - 1
 			end
-			if mapheight[y+1][x+1] > 1 then
-				mapheight[y+1][x+1] = mapheight[y+1][x+1] - 1
+			if map[y+1][x+1] > 1 then
+				map[y+1][x+1] = map[y+1][x+1] - 1
 			end
 		end
 	end
@@ -683,34 +653,28 @@ function love.draw()
 				--map[x][y]=math.random(0,3)
 				if mapblocked[y][x].blocked == false or lighting == false or cave == false then
 					if map[y][x]>=0 then
-						if map[y][x]==1 then
-							love.graphics.setColor(mapheight[y][x]*3+200,mapheight[y][x]*3+200,mapheight[y][x]*3+200,255)
+						if map[y][x]<=10 then
+							love.graphics.setColor(map[y][x]*3+200,map[y][x]*3+200,map[y][x]*3+200,255)
 							love.graphics.draw(water,x*tilesize, y*tilesize)
-						elseif map[y][x]==2 then
-							--love.graphics.setColor(mapheight[y][x]*3+180,mapheight[y][x]*3+180,mapheight[y][x]*3+180,255)
-							love.graphics.setColor(255-mapheight[y][x]*3,255-mapheight[y][x]*3,255-mapheight[y][x]*3,255)
-							love.graphics.draw(grass,x*tilesize, y*tilesize)	
-						elseif map[y][x]==3 then
-							love.graphics.setColor(255-mapheight[y][x]*3,255-mapheight[y][x]*3,255-mapheight[y][x]*3,255)
-							love.graphics.draw(tree,x*tilesize, y*tilesize)
-						elseif map[y][x]==4 then
-							love.graphics.setColor(255-mapheight[y][x]*3,255-mapheight[y][x]*3,255-mapheight[y][x]*3,255)
-							love.graphics.draw(beach,x*tilesize, y*tilesize)
-						elseif map[y][x]==5 then
-							love.graphics.setColor(210,210,210,255)
-							love.graphics.draw(horiBridge,x*tilesize, y*tilesize)
-						elseif map[y][x]==6 then
-							love.graphics.setColor(210,210,210,255)
-							love.graphics.draw(vertBridge,x*tilesize, y*tilesize)
-						elseif map[y][x]==7 then
-							love.graphics.setColor(255-mapheight[y][x]*3,255-mapheight[y][x]*3,255-mapheight[y][x]*3,255)
-							love.graphics.draw(waterLadder,x*tilesize, y*tilesize)
-						elseif map[y][x]==8 then
-							love.graphics.setColor(255-mapheight[y][x]*3,255-mapheight[y][x]*3,255-mapheight[y][x]*3,255)
-							love.graphics.draw(longGrass,x*tilesize, y*tilesize)
-						else 
+						elseif map[y][x]<=50 then
+							love.graphics.setColor(255-map[y][x]*3,255-map[y][x]*3,255-map[y][x]*3,255)
+							love.graphics.draw(grass,x*tilesize, y*tilesize)
+						else
 							love.graphics.setColor(0,255,0,255)
 							love.graphics.rectangle("fill",x*tilesize,y*tilesize,tilesize,tilesize)
+						end
+						if map[y][x]==13 then
+							love.graphics.setColor(210,210,210,255)
+							love.graphics.draw(tree,x*tilesize, y*tilesize)
+						elseif map[y][x]==101 then
+							love.graphics.setColor(210,210,210,255)
+							love.graphics.draw(horiBridge,x*tilesize, y*tilesize)
+						elseif map[y][x]==102 then
+							love.graphics.setColor(210,210,210,255)
+							love.graphics.draw(vertBridge,x*tilesize, y*tilesize)
+						elseif map[y][x]==103 then
+							love.graphics.setColor(210,210,210,255)
+							love.graphics.draw(waterLadder,x*tilesize, y*tilesize)
 						end
 						
 					end
@@ -729,7 +693,7 @@ function love.draw()
 					--love.graphics.rectangle("fill",x*tilesize,y*tilesize,tilesize,tilesize)
 				end
 				
-				love.graphics.print(mapheight[y][x], x*tilesize +10, y*tilesize+10)
+				--love.graphics.print(map[y][x], x*tilesize +10, y*tilesize+10)
 				
 				mapblocked[y][x].blocked = true
 			end
@@ -748,16 +712,12 @@ function love.draw()
 				if y+yrangenorm-25 > ymin and y+yrangenorm-25 < ymax and x+xrangenorm-25 > xmin and x+xrangenorm-25 < xmax then
 					--if minimap[y+yrange-50][x+xrange-50].mapvisible == true then
 						if map[y+yrangenorm-25][x+xrangenorm-25]>=0 then
-							if map[y+yrangenorm-25][x+xrangenorm-25]==1 then
+							if map[y+yrangenorm-25][x+xrangenorm-25]<=10 then
 								love.graphics.setColor(65,150,240,255)
-							elseif map[y+yrangenorm-25][x+xrangenorm-25]==2 or map[y+yrangenorm-25][x+xrangenorm-25]==8 then
+							elseif map[y+yrangenorm-25][x+xrangenorm-25]<=50 then
 								love.graphics.setColor(75,190,60,255)
-							elseif map[y+yrangenorm-25][x+xrangenorm-25]==5 or map[y+yrangenorm-25][x+xrangenorm-25]==6 then
+							elseif map[y+yrangenorm-25][x+xrangenorm-25]==101 or map[y+yrangenorm-25][x+xrangenorm-25]==102 then
 								love.graphics.setColor(120,95,0,255)
-							elseif map[y+yrangenorm-25][x+xrangenorm-25]==4 then
-								love.graphics.setColor(220,210,120,255)
-							elseif map[y+yrangenorm-25][x+xrangenorm-25]==3 then
-								love.graphics.setColor(55,170,40,255)
 							else
 								love.graphics.setColor(0,255,0,255)
 							end
@@ -775,7 +735,6 @@ function love.draw()
 	end
 	--A bunch of stats displayed on screen to make things easier to debug
 	love.graphics.setColor(255,255,255,255)
-
 	--love.graphics.draw(,x*tilesize, y*tilesize)
 	love.graphics.draw(characterimg,character.x,character.y)
 	
@@ -808,11 +767,4 @@ function roundnum (int)
 		return math.floor(int)
 	end
 end
-
-
-
-
-
-
-
 
