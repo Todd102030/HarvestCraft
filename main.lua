@@ -88,6 +88,12 @@ function love.load()
 	
 	
 	
+	minimapcanvas = love.graphics.newCanvas(2000,2000)
+	mapcanvas = love.graphics.newCanvas(2000,2000)
+	
+	
+	
+	
 	minimapdraw = true
 	lighting = false
 	
@@ -116,12 +122,12 @@ function love.load()
 	
 	--basic terrain generation algorithm
 	--needs more detail
-	for i=1,3000 do
+	for i=1,2000 do
 		mapy = math.random(ymin,ymax)
 		mapx = math.random(xmin,xmax)
 		mapheight[mapy][mapx]=math.random(1,20)
 		
-		xrand = math.random(4,10)
+		xrand = math.random(5,12)
 		--yrand = math.random(4,10)
 		yrand=xrand
 		
@@ -165,7 +171,7 @@ function love.load()
 					elseif mapheight[y][x] < 24 then
 						map[y][x] = 2
 					end
-					if mapheight[y][x] == 9 or mapheight[y][x] == 8 or mapheight[y][x] == 7 or mapheight[y][x] == 6 then
+					if mapheight[y][x] == 9 or mapheight[y][x] == 8 --[[or mapheight[y][x] == 7 or mapheight[y][x] == 6]] then
 						map[y][x] = 4
 					end
 				end
@@ -351,9 +357,96 @@ function love.load()
 	
 	
 	
+	love.graphics.setCanvas(minimapcanvas)
+		minimapcanvas:clear()
+		for x=0,500 do
+			for y=0,500 do
+				--if y+yrangenorm-25 > ymin and y+yrangenorm-25 < ymax and x+xrangenorm-25 > xmin and x+xrangenorm-25 < xmax then
+					--if minimap[y+yrange-50][x+xrange-50].mapvisible == true then
+				if map[y][x]>=0 then
+					if map[y][x]==1 then
+						love.graphics.setColor(65,150,240,255)
+					elseif map[y][x]==2 or map[y][x]==8 then
+						love.graphics.setColor(75,190,60,255)
+					elseif map[y][x]==5 or map[y][x]==6 then
+						love.graphics.setColor(120,95,0,255)
+					elseif map[y][x]==4 then
+						love.graphics.setColor(220,210,120,255)
+					elseif map[y][x]==3 then
+						love.graphics.setColor(55,170,40,255)
+					else
+						love.graphics.setColor(0,255,0,255)
+					end
+					love.graphics.rectangle("fill",x*minimapsize,y*minimapsize,minimapsize,minimapsize)
+				end
+					--end
+				--end
+			end
+		end
+	love.graphics.setCanvas()
+		
 	
-	
-	
+	love.graphics.setCanvas(mapcanvas)
+		mapcanvas:clear()
+		for x=xmin,xmax do
+			for y=ymin,ymax do
+				if y > ymin and y < ymax and x > xmin and x < xmax then
+					--map[x][y]=math.random(0,3)
+					if mapblocked[y][x].blocked == false or lighting == false or cave == false then
+						if map[y][x]>=0 then
+							if map[y][x]==1 then
+								love.graphics.setColor(mapheight[y][x]*3+200,mapheight[y][x]*3+200,mapheight[y][x]*3+200,255)
+								love.graphics.draw(water,x*tilesize, y*tilesize)
+							elseif map[y][x]==2 then
+								--love.graphics.setColor(mapheight[y][x]*3+180,mapheight[y][x]*3+180,mapheight[y][x]*3+180,255)
+								love.graphics.setColor(255-mapheight[y][x]*3,255-mapheight[y][x]*3,255-mapheight[y][x]*3,255)
+								love.graphics.draw(grass,x*tilesize, y*tilesize)	
+							elseif map[y][x]==3 then
+								love.graphics.setColor(255-mapheight[y][x]*3,255-mapheight[y][x]*3,255-mapheight[y][x]*3,255)
+								love.graphics.draw(tree,x*tilesize, y*tilesize)
+							elseif map[y][x]==4 then
+								love.graphics.setColor(255-mapheight[y][x]*3,255-mapheight[y][x]*3,255-mapheight[y][x]*3,255)
+								love.graphics.draw(beach,x*tilesize, y*tilesize)
+							elseif map[y][x]==5 then
+								love.graphics.setColor(210,210,210,255)
+								love.graphics.draw(horiBridge,x*tilesize, y*tilesize)
+							elseif map[y][x]==6 then
+								love.graphics.setColor(210,210,210,255)
+								love.graphics.draw(vertBridge,x*tilesize, y*tilesize)
+							elseif map[y][x]==7 then
+								love.graphics.setColor(255-mapheight[y][x]*3,255-mapheight[y][x]*3,255-mapheight[y][x]*3,255)
+								love.graphics.draw(waterLadder,x*tilesize, y*tilesize)
+							elseif map[y][x]==8 then
+								love.graphics.setColor(255-mapheight[y][x]*3,255-mapheight[y][x]*3,255-mapheight[y][x]*3,255)
+								love.graphics.draw(longGrass,x*tilesize, y*tilesize)
+							else 
+								love.graphics.setColor(0,255,0,255)
+								love.graphics.rectangle("fill",x*tilesize,y*tilesize,tilesize,tilesize)
+							end
+							
+						end
+					else
+						if map[y][x]<=10 then
+								love.graphics.setColor(map[y][x]*3+100,map[y][x]*3+100,map[y][x]*3+100,255)
+								love.graphics.draw(water,x*tilesize, y*tilesize)
+							elseif map[y][x]<=50 then
+								love.graphics.setColor(255-map[y][x]*3-100,255-map[y][x]*3-100,255-map[y][x]*3-100,255)
+								love.graphics.draw(grass,x*tilesize, y*tilesize)
+							else
+								love.graphics.setColor(0,255,0,255)
+								love.graphics.rectangle("fill",x*tilesize,y*tilesize,tilesize,tilesize)
+							end
+						--love.graphics.setColor(0,0,0,90)
+						--love.graphics.rectangle("fill",x*tilesize,y*tilesize,tilesize,tilesize)
+					end
+					
+					--love.graphics.print(mapheight[y][x], x*tilesize +10, y*tilesize+10)
+					
+					mapblocked[y][x].blocked = true
+				end
+			end
+		end
+	love.graphics.setCanvas()
 	
 	
 	--camera code found on http://nova-fusion.com/2011/04/19/cameras-in-love2d-part-1-the-basics/
@@ -677,7 +770,7 @@ function love.draw()
 	camera:set()
 	--Pretty straightforward code to determine what tiles to draw on the screen
 	love.graphics.setColor(0,0,0,255)
-	for x=xrangenorm-13,xrangenorm +13 do
+	--[[for x=xrangenorm-13,xrangenorm +13 do
 		for y=yrangenorm-13,yrangenorm +13 do
 			if y > ymin and y < ymax and x > xmin and x < xmax then
 				--map[x][y]=math.random(0,3)
@@ -729,19 +822,20 @@ function love.draw()
 					--love.graphics.rectangle("fill",x*tilesize,y*tilesize,tilesize,tilesize)
 				end
 				
-				love.graphics.print(mapheight[y][x], x*tilesize +10, y*tilesize+10)
+				--love.graphics.print(mapheight[y][x], x*tilesize +10, y*tilesize+10)
 				
 				mapblocked[y][x].blocked = true
 			end
 		end
-	end
+	end]]
 	--minimapdraw=false
+	
 	if minimapdraw==true then
 	
 		love.graphics.setColor(0,0,0,255)
 		love.graphics.rectangle("fill", 585+camera.x, camera.y, 215, 215)
 		
-		
+		--[[
 		--MINIMAP DRAWING
 		for x=0,50 do
 			for y=0,50 do
@@ -766,13 +860,18 @@ function love.draw()
 					--end
 				end
 			end
-		end
+		end]]
 		love.graphics.setColor(255,255,255,255)
 		love.graphics.print("Minimap on", 150 +camera.x, 10+camera.y)
 	else
 		love.graphics.setColor(255,255,255,255)
 		love.graphics.print("Minimap off", 150 +camera.x, 10+camera.y)
 	end
+	
+	
+	--love.graphics.draw(minimapcanvas)
+	love.graphics.draw(mapcanvas)
+	
 	--A bunch of stats displayed on screen to make things easier to debug
 	love.graphics.setColor(255,255,255,255)
 
