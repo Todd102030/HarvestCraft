@@ -57,7 +57,7 @@ function love.load()
 	waterLadder = love.graphics.newImage("resources/tiles/WaterLadder.jpg")
 
 	love.window.setCaption("Terrain Generation Alpha")
-	love.window.setMode(800,800,{vsync = false)
+	love.window.setMode(800,800,{vsync = false})
 
 	--length/width of map and tile squares 
 	minimapsize = 4
