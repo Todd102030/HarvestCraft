@@ -88,8 +88,8 @@ function love.load()
 	
 	
 	
-	minimapcanvas = love.graphics.newCanvas(2000,2000)
-	mapcanvas = love.graphics.newCanvas(2000,2000)
+	minimapcanvas = love.graphics.newCanvas(2010,2010)
+	mapcanvas = love.graphics.newCanvas(1000,1000)
 	
 	
 	
@@ -359,6 +359,8 @@ function love.load()
 	
 	love.graphics.setCanvas(minimapcanvas)
 		minimapcanvas:clear()
+		--love.graphics.setColor(0,0,0,255)
+		--love.graphics.rectangle("fill", 0,0,2010,2010)
 		for x=0,500 do
 			for y=0,500 do
 				--if y+yrangenorm-25 > ymin and y+yrangenorm-25 < ymax and x+xrangenorm-25 > xmin and x+xrangenorm-25 < xmax then
@@ -377,7 +379,8 @@ function love.load()
 					else
 						love.graphics.setColor(0,255,0,255)
 					end
-					love.graphics.rectangle("fill",x*minimapsize,y*minimapsize,minimapsize,minimapsize)
+					love.graphics.rectangle("fill",x,y,1,1)
+					--love.graphics.rectangle("fill",x--[[*minimapsize]],y--[[*minimapsize]],minimapsize,minimapsize)
 				end
 					--end
 				--end
@@ -770,7 +773,7 @@ function love.draw()
 	camera:set()
 	--Pretty straightforward code to determine what tiles to draw on the screen
 	love.graphics.setColor(0,0,0,255)
-	--[[for x=xrangenorm-13,xrangenorm +13 do
+	for x=xrangenorm-13,xrangenorm +13 do
 		for y=yrangenorm-13,yrangenorm +13 do
 			if y > ymin and y < ymax and x > xmin and x < xmax then
 				--map[x][y]=math.random(0,3)
@@ -827,14 +830,23 @@ function love.draw()
 				mapblocked[y][x].blocked = true
 			end
 		end
-	end]]
+	end
+	
+	
+	
+	love.graphics.draw(characterimg,character.x,character.y)
+	
+	
 	--minimapdraw=false
-	
 	if minimapdraw==true then
-	
 		love.graphics.setColor(0,0,0,255)
-		love.graphics.rectangle("fill", 585+camera.x, camera.y, 215, 215)
-		
+		--love.graphics.line(camera.x+150, camera.y+150,camera.x+650,camera.y+150,camera.x+650,camera.y+650,camera.x+150,camera.y+650,camera.x+150,camera.y+150)
+		love.graphics.rectangle("line",camera.x+149, camera.y+149,503,503)
+		love.graphics.setColor(255,255,255,180)
+		--love.graphics.rectangle("fill", 585+camera.x, camera.y, 215, 215)
+		love.graphics.draw(minimapcanvas, camera.x +150, camera.y +150)
+		love.graphics.setColor(255,0,0,255)
+		love.graphics.circle("fill",xrange+camera.x+150, yrange+camera.y+150,3,10)
 		--[[
 		--MINIMAP DRAWING
 		for x=0,50 do
@@ -868,15 +880,15 @@ function love.draw()
 		love.graphics.print("Minimap off", 150 +camera.x, 10+camera.y)
 	end
 	
+	--love.graphics.draw(mapcanvas)
 	
-	--love.graphics.draw(minimapcanvas)
-	love.graphics.draw(mapcanvas)
+	
 	
 	--A bunch of stats displayed on screen to make things easier to debug
 	love.graphics.setColor(255,255,255,255)
 
 	--love.graphics.draw(,x*tilesize, y*tilesize)
-	love.graphics.draw(characterimg,character.x,character.y)
+	
 	
 	love.graphics.setColor(255,255,255,255)
 	love.graphics.print("Current FPS: "..tostring(love.timer.getFPS( )), 10+math.floor(camera.x), 10+math.floor(camera.y))
