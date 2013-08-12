@@ -39,6 +39,8 @@
 --Add a new array so that one stores height values and one stores item values. Or use the Table data style of Lua and 
 --^^stick them both in one array
 
+require "generation"
+
 function love.load()
 	
 	characterimg = love.graphics.newImage("resources/tiles/character.png")
@@ -88,7 +90,7 @@ function love.load()
 	
 	
 	
-	minimapcanvas = love.graphics.newCanvas(2010,2010)
+	minimapcanvas = love.graphics.newCanvas(500,500)
 	mapcanvas = love.graphics.newCanvas(1000,1000)
 	
 	
@@ -120,222 +122,17 @@ function love.load()
 		end
 	end
 	
-	--basic terrain generation algorithm
-	--needs more detail
-	for i=1,2000 do
-		mapy = math.random(ymin,ymax)
-		mapx = math.random(xmin,xmax)
-		mapheight[mapy][mapx]=math.random(1,20)
-		
-		xrand = math.random(5,12)
-		--yrand = math.random(4,10)
-		yrand=xrand
-		
-		for y = mapy - yrand, mapy + yrand do
-			for x = mapx - xrand, mapx + xrand do
-				if y > ymin and y < ymax and x > xmin and x < xmax then
-					--[[if xrand > yrand then
-						radiussize = xrand
-					else
-						radiussize = yrand
-					end
-					radius = radiussize + 1 - (math.floor(math.sqrt(math.pow(mapy - y,2) + math.pow(mapx - x,2)))) 
-					]]--
-					if xrand > yrand then
-						radiussize = xrand
-					else
-						radiussize = yrand
-					end
-					
-					radius = radiussize + 1 - (math.floor(math.sqrt(math.pow(mapy - y,2) + math.pow(mapx - x,2)))) 
-					--[[if xrand > yrand then
-						radius = radius * (yrand/xrand)
-					else
-						radius = radius * (xrand/yrand)
-					end]]--
-					
-					
-					if mapx == x and mapy == y then
-						mapheight[y][x] = mapheight[y-1][x]
-					else
-						mapheight[y][x] = mapheight[y][x] + radius
-					end
-					if mapheight[y][x] < 0 then
-						mapheight[y][x] = 0
-					end
-					if mapheight[y][x] > 24 then
-						mapheight[y][x] = 24
-					end
-					if mapheight[y][x] < 10 then
-						map[y][x] = 1
-					elseif mapheight[y][x] < 24 then
-						map[y][x] = 2
-					end
-					if mapheight[y][x] == 9 or mapheight[y][x] == 8 --[[or mapheight[y][x] == 7 or mapheight[y][x] == 6]] then
-						map[y][x] = 4
-					end
-				end
-				
-			end
-		end
-		
-		--end
-	end
-		
 	
-		
-	for i=1,400 do
-	--drawBridge = false
-	--while drawBridge == false do 
-		foundGround = false
-		while foundGround == false do
-			mapyBridge = math.random(ymin,ymax)
-			mapxBridge = math.random(xmin,xmax)
-			if map[mapyBridge][mapxBridge]==2 then
-				foundGround = true
-			end
-		end
-		
-		--startBridgex = mapx
-		--startBridgey = mapy
-		startBridge = false
-		madeBridge = false
-		previousGround = map[mapyBridge][mapxBridge]
-		startBridgex = 0
-		startBridgey = 0
-		endBridgex = 0
-		endBridgey = 0
-		--countBridge=0
-		randbridge = math.random(2)
-		if randbridge == 1 then
-			for num = 1,25 do
-				if mapyBridge > ymin and mapyBridge < ymax and mapxBridge + num > xmin and mapxBridge + num < xmax then
-					if previousGround ==2 and map[mapyBridge][mapxBridge+num] ==1 and startBridge == false then
-						startBridgex = mapxBridge+num - 1
-						startBridgey = mapyBridge
-						previousGround = map[mapyBridge][mapxBridge+num]
-						--map[mapy][mapx+num] = 101
-						startBridge = true
-					end
-					if madeBridge == false and map[mapyBridge][mapxBridge+num]==2 and previousGround ==1 then
-						madeBridge = true
-						endBridgex = mapxBridge+num
-						endBridgey = mapyBridge
-						drawBridge = true
-						bridgeOrientation = 0 
-						--map[mapy][mapx+num] = 102
-						break
-					end
-				end
-			end
-		else
-			for num = 1,25 do
-				if mapyBridge + num > ymin and mapyBridge + num < ymax and mapxBridge > xmin and mapxBridge < xmax then
-					if previousGround ==2 and map[mapyBridge+num][mapxBridge] ==1 and startBridge == false then
-						startBridgex = mapxBridge
-						startBridgey = mapyBridge+num - 1
-						previousGround = map[mapyBridge+num][mapxBridge]
-						--map[mapy][mapx+num] = 101
-						startBridge = true
-					end
-					if madeBridge == false and map[mapyBridge+num][mapxBridge]==2 and previousGround ==1 then
-						madeBridge = true
-						endBridgex = mapxBridge
-						endBridgey = mapyBridge+num
-						drawBridge = true
-						bridgeOrientation = 1 
-						--map[mapy][mapx+num] = 102
-						break
-					end
-				end
-			end
-		end
-		
-		
-		if drawBridge == true and bridgeOrientation == 0 and endBridgex - startBridgex > 3 then			
-			for x = startBridgex, endBridgex do
-				if endBridgex - startBridgex < 13 then
-					map[endBridgey][x] = 5
-				else
-					map[endBridgey][x] = 5
-					map[endBridgey+1][x] = 5
-				end
-			end
-			--drawBridge = false
-			--madeBridge = false
-			--countBridge = 0
-		end
-		if drawBridge == true and bridgeOrientation == 1 and endBridgey - startBridgey > 3 then
-			for y = startBridgey, endBridgey do	
-				if endBridgey - startBridgey < 13 then
-					map[y][endBridgex] = 6
-				else
-					map[y][endBridgex] = 6
-					map[y][endBridgex+1] = 6
-				end
-			end
-			--drawBridge = false
-			--madeBridge = false
-			--countBridge = 0
-		end
-		
-		
-		
-	end
+	genIslands(2000)
+	genBridges(400)
+	genPonds(100)	
+	genTrees(20000)
+	genLongGrass(70000)
 	
 	
-	for i=1,100 do
-
-		foundGround = false
-		while foundGround == false do
-			mapyPond = math.random(ymin,ymax)
-			mapxPond = math.random(xmin,xmax)
-			countPond = 0
-			
-			for y = -3 , 5 do
-				for x = -4 , 4 do
-					if mapyPond + y > ymin and mapyPond + y < ymax and mapxPond + x > xmin and mapxPond + x < xmax then
-						if map[mapyPond + y][mapxPond + x]==2 then
-							countPond = countPond + 1
-						end
-					end
-				end
-			end
-			
-			if countPond == 81 then
-				foundGround = true
-			end
-		end
-		for y = 1 , 3 do
-			for x = -2 , 2 do
-				if mapyPond - y > ymin and mapyPond + y < ymax and mapxPond + x > xmin and mapxPond + x < xmax then
-					map[mapyPond + y][mapxPond + x] = 1
-					mapheight[mapyPond + y][mapxPond + x] = 5
-				end
-			end
-		end
-		map[mapyPond][mapxPond] = 7
-		
-				
-		
-	end
 	
 	
-	for i=1,5000 do
-		mapyTree = math.random(ymin,ymax)
-		mapxTree = math.random(xmin,xmax)
-		if map[mapxTree][mapyTree]==2 then
-			map[mapxTree][mapyTree]=3
-		end
-	end
-
-	for i=1,70000 do
-		mapyTree = math.random(ymin,ymax)
-		mapxTree = math.random(xmin,xmax)
-		if map[mapxTree][mapyTree]==2 then
-			map[mapxTree][mapyTree]=8
-		end
-	end
+	
 	--[[
 	for y = ymin, ymax do
 		for x = xmax, xmax do
@@ -833,8 +630,17 @@ function love.draw()
 	end
 	
 	
-	
+	love.graphics.setColor(255,255,255,255)
 	love.graphics.draw(characterimg,character.x,character.y)
+	
+	
+	--love.graphics.draw(mapcanvas)
+	love.graphics.setColor(0,0,0,255)
+	love.graphics.rectangle("fill", 585+camera.x, camera.y, 215, 215)
+	love.graphics.setColor(255,255,255,255)
+	minimapcanvas:setFilter("nearest", "nearest")
+	minimapquad = love.graphics.newQuad(xrange - 26, yrange - 26, 51, 51, 500,500)
+	love.graphics.drawq(minimapcanvas, minimapquad,590+camera.x, 5+camera.y,0,4,4)
 	
 	
 	--minimapdraw=false
@@ -880,7 +686,8 @@ function love.draw()
 		love.graphics.print("Minimap off", 150 +camera.x, 10+camera.y)
 	end
 	
-	--love.graphics.draw(mapcanvas)
+	
+	
 	
 	
 	
