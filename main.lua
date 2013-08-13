@@ -127,10 +127,10 @@ function love.load()
 	
 	
 	genIslands(2000)
-	--genBridges(400)
+	genBridges(400)
 	genPonds(100)	
-	--genTrees(20000)
-	--genLongGrass(70000)
+	genTrees(20000)
+	genLongGrass(70000)
 	
 	
 	
@@ -686,44 +686,24 @@ function love.draw()
 	
 	
 	love.graphics.setColor(0,0,0,255)
-	love.graphics.rectangle("fill",camera.x+495,camera.y+35,42,42)
-	if mousewheelitem == 1 then
-		love.graphics.setColor(255,255,255,255)
-		love.graphics.draw(water,camera.x+500,camera.y+40)
-	elseif mousewheelitem == 2 then
-		love.graphics.setColor(255,255,255,255)
-		love.graphics.draw(grass,camera.x+500,camera.y+40)
-	elseif mousewheelitem == 3 then
-		love.graphics.setColor(255,255,255,255)
-		love.graphics.draw(tree,camera.x+500,camera.y+40)
-	elseif mousewheelitem == 4 then
-		love.graphics.setColor(255,255,255,255)
-		love.graphics.draw(beach,camera.x+500,camera.y+40)
-	elseif mousewheelitem == 5 then
-		love.graphics.setColor(255,255,255,255)
-		love.graphics.draw(horiBridge,camera.x+500,camera.y+40)
-	elseif mousewheelitem == 6 then
-		love.graphics.setColor(255,255,255,255)
-		love.graphics.draw(vertBridge,camera.x+500,camera.y+40)
-	elseif mousewheelitem == 7 then
-		love.graphics.setColor(255,255,255,255)
-		love.graphics.draw(waterLadder,camera.x+500,camera.y+40)
-	elseif mousewheelitem == 8 then
-		love.graphics.setColor(255,255,255,255)
-		love.graphics.draw(longGrass,camera.x+500,camera.y+40)
-	end
+	love.graphics.rectangle("fill",camera.x+495,camera.y+35,42,122)
 	
+	
+	-----funfunfunfunfufnunfufnction
+	displayMouseItem(mousewheelitem-1, 180, 0, 0)
+	displayMouseItem(mousewheelitem, 255, 0, 40)
+	displayMouseItem(mousewheelitem+1, 180, 0, 80)
 	
 	--minimapdraw=false
 	if minimapdraw==true then
 		love.graphics.setColor(0,0,0,255)
 		--love.graphics.line(camera.x+150, camera.y+150,camera.x+650,camera.y+150,camera.x+650,camera.y+650,camera.x+150,camera.y+650,camera.x+150,camera.y+150)
-		love.graphics.rectangle("line",camera.x+149, camera.y+149,503,503)
+		love.graphics.rectangle("line",camera.x+149, camera.y+249,503,503)
 		love.graphics.setColor(255,255,255,180)
 		--love.graphics.rectangle("fill", 585+camera.x, camera.y, 215, 215)
-		love.graphics.draw(minimapcanvas, camera.x +150, camera.y +150)
+		love.graphics.draw(minimapcanvas, camera.x +150, camera.y +250)
 		love.graphics.setColor(255,0,0,255)
-		love.graphics.circle("fill",xrange+camera.x+150, yrange+camera.y+150,3,10)
+		love.graphics.circle("fill",xrange+camera.x+150, yrange+camera.y+250,3,10)
 		--[[
 		--MINIMAP DRAWING
 		for x=0,50 do
@@ -801,19 +781,44 @@ end
 
 function love.mousepressed( x, y, button )
 	if button == "wd" then
-		mousewheelitem = mousewheelitem -1
-		if mousewheelitem < 1 then
-			mousewheelitem = 8
-		end
-	end
-	if button == "wu" then
 		mousewheelitem = mousewheelitem +1
 		if mousewheelitem >8 then
 			mousewheelitem = 1
 		end
 	end
+	if button == "wu" then
+		mousewheelitem = mousewheelitem -1
+		if mousewheelitem < 1 then
+			mousewheelitem = 8
+		end
+	end
 end
 
-
-
+function displayMouseItem (mousewheelitem, alpha, xpos, ypos)
+	if mousewheelitem == 1 then
+		love.graphics.setColor(255,255,255,alpha)
+		love.graphics.draw(water,camera.x+500+xpos,camera.y+40+ypos)
+	elseif mousewheelitem == 2 then
+		love.graphics.setColor(255,255,255,alpha)
+		love.graphics.draw(grass,camera.x+500+xpos,camera.y+40+ypos)
+	elseif mousewheelitem == 3 then
+		love.graphics.setColor(255,255,255,alpha)
+		love.graphics.draw(tree,camera.x+500+xpos,camera.y+40+ypos)
+	elseif mousewheelitem == 4 then
+		love.graphics.setColor(255,255,255,alpha)
+		love.graphics.draw(beach,camera.x+500+xpos,camera.y+40+ypos)
+	elseif mousewheelitem == 5 then
+		love.graphics.setColor(255,255,255,alpha)
+		love.graphics.draw(horiBridge,camera.x+500+xpos,camera.y+40+ypos)
+	elseif mousewheelitem == 6 then
+		love.graphics.setColor(255,255,255,alpha)
+		love.graphics.draw(vertBridge,camera.x+500+xpos,camera.y+40+ypos)
+	elseif mousewheelitem == 7 then
+		love.graphics.setColor(255,255,255,alpha)
+		love.graphics.draw(waterLadder,camera.x+500+xpos,camera.y+40+ypos)
+	elseif mousewheelitem == 8 then
+		love.graphics.setColor(255,255,255,alpha)
+		love.graphics.draw(longGrass,camera.x+500+xpos,camera.y+40+ypos)
+	end
+end
 
