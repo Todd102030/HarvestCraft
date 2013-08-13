@@ -100,7 +100,7 @@ function genBridges(amount)
 						end
 					end
 					if madeBridge == false and previousGround ==1 then
-						if map[mapyBridge][mapxBridge+num] ==2 or map[mapyBridge][mapxBridge+num] ==5 or map[mapyBridge][mapxBridge+num] ==6 then
+						if map[mapyBridge][mapxBridge+num] ==2 or objectmap[mapyBridge][mapxBridge+num] ==5 or objectmap[mapyBridge][mapxBridge+num] ==6 then
 							madeBridge = true
 							endBridgex = mapxBridge+num-1
 							endBridgey = mapyBridge
@@ -127,7 +127,7 @@ function genBridges(amount)
 						end
 					end
 					if madeBridge == false and previousGround ==1 then
-						if map[mapyBridge+num][mapxBridge] ==2 or map[mapyBridge+num][mapxBridge] ==5 or map[mapyBridge+num][mapxBridge] ==6 then
+						if map[mapyBridge+num][mapxBridge] ==2 or objectmap[mapyBridge+num][mapxBridge] ==5 or objectmap[mapyBridge+num][mapxBridge] ==6 then
 							madeBridge = true
 							endBridgex = mapxBridge
 							endBridgey = mapyBridge+num-1
@@ -146,10 +146,10 @@ function genBridges(amount)
 		if drawBridge == true and bridgeOrientation == 0 and endBridgex - startBridgex > 3 then			
 			for x = startBridgex, endBridgex do
 				if endBridgex - startBridgex < 13 then
-					map[endBridgey][x] = 5
+					objectmap[endBridgey][x] = 5
 				else
-					map[endBridgey][x] = 5
-					map[endBridgey+1][x] = 5
+					objectmap[endBridgey][x] = 5
+					objectmap[endBridgey+1][x] = 5
 				end
 			end
 			--drawBridge = false
@@ -159,10 +159,10 @@ function genBridges(amount)
 		if drawBridge == true and bridgeOrientation == 1 and endBridgey - startBridgey > 3 then
 			for y = startBridgey, endBridgey do	
 				if endBridgey - startBridgey < 13 then
-					map[y][endBridgex] = 6
+					objectmap[y][endBridgex] = 6
 				else
-					map[y][endBridgex] = 6
-					map[y][endBridgex+1] = 6
+					objectmap[y][endBridgex] = 6
+					objectmap[y][endBridgex+1] = 6
 				end
 			end
 			--drawBridge = false
@@ -218,7 +218,7 @@ function genTrees(amount)
 		mapyTree = math.random(ymin,ymax)
 		mapxTree = math.random(xmin,xmax)
 		if map[mapxTree][mapyTree]==2 then
-			map[mapxTree][mapyTree]=3
+			objectmap[mapxTree][mapyTree]=3
 		end
 	end
 end
@@ -228,7 +228,7 @@ function genLongGrass(amount)
 		mapyGrass = math.random(ymin,ymax)
 		mapxGrass = math.random(xmin,xmax)
 		if map[mapxGrass][mapyGrass]==2 then
-			map[mapxGrass][mapyGrass]=8
+			objectmap[mapxGrass][mapyGrass]=8
 		end
 	end
 end

@@ -39,6 +39,8 @@
 --Add a new array so that one stores height values and one stores item values. Or use the Table data style of Lua and 
 --^^stick them both in one array
 
+require "generation"
+
 function love.load()
 	
 	characterimg = love.graphics.newImage("resources/tiles/character.png")
@@ -48,23 +50,25 @@ function love.load()
 	water4 = love.graphics.newImage("resources/tiles/Water4.png")
 	water=water1
 	grass = love.graphics.newImage("resources/tiles/Grass.png")
+	beach = love.graphics.newImage("resources/tiles/Beach.png")
 	tree = love.graphics.newImage("resources/tiles/Tree.png")
+	longGrass = love.graphics.newImage("resources/tiles/Longgrass.png")
 	horiBridge = love.graphics.newImage("resources/tiles/HoriBridge.png")
 	vertBridge = love.graphics.newImage("resources/tiles/VertBridge.png")
 	
 	waterLadder = love.graphics.newImage("resources/tiles/WaterLadder.jpg")
 
 	love.window.setCaption("Terrain Generation Alpha")
-	love.window.setMode(800,800)
-
+	--love.window.setMode(tonumber(arg[2]),tonumber(arg[3]),{vsync = false, resizable=true})
+	love.window.setMode(800,800,{vsync = false})
 	--length/width of map and tile squares 
 	minimapsize = 4
 	tilesize = 32
 
 	--main character
 	character = {}
-	character.x = 400
-	character.y = 400
+	character.x = 700
+	character.y = 700
 	
 	--variables to aid in making the camera follow the character; xrange
 	xrange = (character.x + 16) / tilesize
@@ -86,6 +90,15 @@ function love.load()
 	
 	
 	
+	minimapcanvas = love.graphics.newCanvas(500,500)
+	mapcanvas = love.graphics.newCanvas(1000,1000)
+	
+	
+	
+	mousewheelitem = 1
+	wheelitemcount = 255
+	
+	
 	minimapdraw = true
 	lighting = false
 	
@@ -96,210 +109,33 @@ function love.load()
 	map={}
 	mapblocked={}
 	minimap={}
+	mapheight={}
 	for i=ymin,ymax do
 		map[i]={}
 		mapblocked[i]={}
 		minimap[i]={}
+		mapheight[i]={}
 		for n=xmin,xmax do
 			mapblocked[i][n] = {}
-			map[i][n]=0
+			map[i][n]=1
+			mapheight[i][n]=1
 			minimap[i][n]={}
 			minimap[i][n].mapvisible = false
 			
 		end
 	end
 	
-	--basic terrain generation algorithm
-	--needs more detail
-	for i=1,3000 do
-		mapy = math.random(ymin,ymax)
-		mapx = math.random(xmin,xmax)
-		map[mapy][mapx]=math.random(1,20)
-		
-		xrand = math.random(4,10)
-		yrand = math.random(4,10)
-		
-		for y = mapy - yrand, mapy + yrand do
-			for x = mapx - xrand, mapx + xrand do
-				if y > ymin and y < ymax and x > xmin and x < xmax then
-					--[[if xrand > yrand then
-						radiussize = xrand
-					else
-						radiussize = yrand
-					end
-					radius = radiussize + 1 - (math.floor(math.sqrt(math.pow(mapy - y,2) + math.pow(mapx - x,2)))) 
-					]]--
-					if xrand > yrand then
-						radiussize = xrand
-					else
-						radiussize = yrand
-					end
-					
-					radius = radiussize + 1 - (math.floor(math.sqrt(math.pow(mapy - y,2) + math.pow(mapx - x,2)))) 
-					--[[if xrand > yrand then
-						radius = radius * (yrand/xrand)
-					else
-						radius = radius * (xrand/yrand)
-					end]]--
-					
-					
-					if mapx == x and mapy == y then
-						map[y][x] = map[y-1][x]
-					else
-						map[y][x] = map[y][x] + radius
-					end
-					if map[y][x] < 0 then
-						map[y][x] = 0
-					end
-					if map[y][x] > 24 then
-						map[y][x] = 24
-					end
-				end
-				
-			end
-		end
-		
-		--end
-	end
-		
 	
-		
-	for i=1,400 do
-	--drawBridge = false
-	--while drawBridge == false do 
-		foundGround = false
-		while foundGround == false do
-			mapyBridge = math.random(ymin,ymax)
-			mapxBridge = math.random(xmin,xmax)
-			if map[mapyBridge][mapxBridge]>10 then
-				foundGround = true
-			end
-		end
-		
-		--startBridgex = mapx
-		--startBridgey = mapy
-		startBridge = false
-		madeBridge = false
-		previousGround = map[mapyBridge][mapxBridge]
-		startBridgex = 0
-		startBridgey = 0
-		endBridgex = 0
-		endBridgey = 0
-		--countBridge=0
-		randbridge = math.random(2)
-		if randbridge == 1 then
-			for num = 1,25 do
-				if mapyBridge > ymin and mapyBridge < ymax and mapxBridge + num > xmin and mapxBridge + num < xmax then
-					if previousGround >10 and map[mapyBridge][mapxBridge+num] <=10 and startBridge == false then
-						startBridgex = mapxBridge+num - 1
-						startBridgey = mapyBridge
-						previousGround = map[mapyBridge][mapxBridge+num]
-						--map[mapy][mapx+num] = 101
-						startBridge = true
-					end
-					if madeBridge == false and map[mapyBridge][mapxBridge+num]>10 and previousGround <= 10 then
-						madeBridge = true
-						endBridgex = mapxBridge+num
-						endBridgey = mapyBridge
-						drawBridge = true
-						bridgeOrientation = 0 
-						--map[mapy][mapx+num] = 102
-						break
-					end
-				end
-			end
-		else
-			for num = 1,25 do
-				if mapyBridge + num > ymin and mapyBridge + num < ymax and mapxBridge > xmin and mapxBridge < xmax then
-					if previousGround >10 and map[mapyBridge+num][mapxBridge] <=10 and startBridge == false then
-						startBridgex = mapxBridge
-						startBridgey = mapyBridge+num - 1
-						previousGround = map[mapyBridge+num][mapxBridge]
-						--map[mapy][mapx+num] = 101
-						startBridge = true
-					end
-					if madeBridge == false and map[mapyBridge+num][mapxBridge]>10 and previousGround <= 10 then
-						madeBridge = true
-						endBridgex = mapxBridge
-						endBridgey = mapyBridge+num
-						drawBridge = true
-						bridgeOrientation = 1 
-						--map[mapy][mapx+num] = 102
-						break
-					end
-				end
-			end
-		end
-		
-		
-		if drawBridge == true and bridgeOrientation == 0 and endBridgex - startBridgex > 3 then			
-			for x = startBridgex, endBridgex do
-				if endBridgex - startBridgex < 13 then
-					map[endBridgey][x] = 101
-				else
-					map[endBridgey][x] = 101
-					map[endBridgey+1][x] = 101
-				end
-			end
-			--drawBridge = false
-			--madeBridge = false
-			--countBridge = 0
-		end
-		if drawBridge == true and bridgeOrientation == 1 and endBridgey - startBridgey > 3 then
-			for y = startBridgey, endBridgey do	
-				if endBridgey - startBridgey < 13 then
-					map[y][endBridgex] = 102
-				else
-					map[y][endBridgex] = 102
-					map[y][endBridgex+1] = 102
-				end
-			end
-			--drawBridge = false
-			--madeBridge = false
-			--countBridge = 0
-		end
-		
-		
-		
-	end
+	genIslands(1200)
+	genBridges(400)
+	genPonds(100)	
+	genTrees(20000)
+	genLongGrass(70000)
 	
 	
-	for i=1,100 do
-	--drawBridge = false
-	--while drawBridge == false do 
-		foundGround = false
-		while foundGround == false do
-			mapyPond = math.random(ymin,ymax)
-			mapxPond = math.random(xmin,xmax)
-			countPond = 0
-			
-			for y = -3 , 5 do
-				for x = -4 , 4 do
-					if mapyPond + y > ymin and mapyPond + y < ymax and mapxPond + x > xmin and mapxPond + x < xmax then
-						if map[mapyPond + y][mapxPond + x]>10 then
-							countPond = countPond + 1
-						end
-					end
-				end
-			end
-			
-			if countPond == 81 then
-				foundGround = true
-			end
-		end
-		for y = 1 , 3 do
-			for x = -2 , 2 do
-				if mapyPond - y > ymin and mapyPond + y < ymax and mapxPond + x > xmin and mapxPond + x < xmax then
-					map[mapyPond + y][mapxPond + x] = 10
-				end
-			end
-		end
-		map[mapyPond][mapxPond] = 103
-		
-				
-		
-	end
-
+	
+	
+	
 	--[[
 	for y = ymin, ymax do
 		for x = xmax, xmax do
@@ -321,9 +157,99 @@ function love.load()
 	
 	
 	
+	love.graphics.setCanvas(minimapcanvas)
+		minimapcanvas:clear()
+		--love.graphics.setColor(0,0,0,255)
+		--love.graphics.rectangle("fill", 0,0,2010,2010)
+		for x=0,500 do
+			for y=0,500 do
+				--if y+yrangenorm-25 > ymin and y+yrangenorm-25 < ymax and x+xrangenorm-25 > xmin and x+xrangenorm-25 < xmax then
+					--if minimap[y+yrange-50][x+xrange-50].mapvisible == true then
+				if map[y][x]>=0 then
+					if map[y][x]==1 then
+						love.graphics.setColor(65,150,240,255)
+					elseif map[y][x]==2 or map[y][x]==8 then
+						love.graphics.setColor(75,190,60,255)
+					elseif map[y][x]==5 or map[y][x]==6 then
+						love.graphics.setColor(120,95,0,255)
+					elseif map[y][x]==4 then
+						love.graphics.setColor(220,210,120,255)
+					elseif map[y][x]==3 then
+						love.graphics.setColor(55,170,40,255)
+					else
+						love.graphics.setColor(0,255,0,255)
+					end
+					love.graphics.rectangle("fill",x,y,1,1)
+					--love.graphics.rectangle("fill",x--[[*minimapsize]],y--[[*minimapsize]],minimapsize,minimapsize)
+				end
+					--end
+				--end
+			end
+		end
+	love.graphics.setCanvas()
+		
 	
-	
-	
+	love.graphics.setCanvas(mapcanvas)
+		mapcanvas:clear()
+		for x=xmin,xmax do
+			for y=ymin,ymax do
+				if y > ymin and y < ymax and x > xmin and x < xmax then
+					--map[x][y]=math.random(0,3)
+					if mapblocked[y][x].blocked == false or lighting == false or cave == false then
+						if map[y][x]>=0 then
+							if map[y][x]==1 then
+								love.graphics.setColor(mapheight[y][x]*3+200,mapheight[y][x]*3+200,mapheight[y][x]*3+200,255)
+								love.graphics.draw(water,x*tilesize, y*tilesize)
+							elseif map[y][x]==2 then
+								--love.graphics.setColor(mapheight[y][x]*3+180,mapheight[y][x]*3+180,mapheight[y][x]*3+180,255)
+								love.graphics.setColor(255-mapheight[y][x]*3,255-mapheight[y][x]*3,255-mapheight[y][x]*3,255)
+								love.graphics.draw(grass,x*tilesize, y*tilesize)	
+							elseif map[y][x]==3 then
+								love.graphics.setColor(255-mapheight[y][x]*3,255-mapheight[y][x]*3,255-mapheight[y][x]*3,255)
+								love.graphics.draw(tree,x*tilesize, y*tilesize)
+							elseif map[y][x]==4 then
+								love.graphics.setColor(255-mapheight[y][x]*3,255-mapheight[y][x]*3,255-mapheight[y][x]*3,255)
+								love.graphics.draw(beach,x*tilesize, y*tilesize)
+							elseif map[y][x]==5 then
+								love.graphics.setColor(210,210,210,255)
+								love.graphics.draw(horiBridge,x*tilesize, y*tilesize)
+							elseif map[y][x]==6 then
+								love.graphics.setColor(210,210,210,255)
+								love.graphics.draw(vertBridge,x*tilesize, y*tilesize)
+							elseif map[y][x]==7 then
+								love.graphics.setColor(255-mapheight[y][x]*3,255-mapheight[y][x]*3,255-mapheight[y][x]*3,255)
+								love.graphics.draw(waterLadder,x*tilesize, y*tilesize)
+							elseif map[y][x]==8 then
+								love.graphics.setColor(255-mapheight[y][x]*3,255-mapheight[y][x]*3,255-mapheight[y][x]*3,255)
+								love.graphics.draw(longGrass,x*tilesize, y*tilesize)
+							else 
+								love.graphics.setColor(0,255,0,255)
+								love.graphics.rectangle("fill",x*tilesize,y*tilesize,tilesize,tilesize)
+							end
+							
+						end
+					else
+						if map[y][x]<=10 then
+								love.graphics.setColor(map[y][x]*3+100,map[y][x]*3+100,map[y][x]*3+100,255)
+								love.graphics.draw(water,x*tilesize, y*tilesize)
+							elseif map[y][x]<=50 then
+								love.graphics.setColor(255-map[y][x]*3-100,255-map[y][x]*3-100,255-map[y][x]*3-100,255)
+								love.graphics.draw(grass,x*tilesize, y*tilesize)
+							else
+								love.graphics.setColor(0,255,0,255)
+								love.graphics.rectangle("fill",x*tilesize,y*tilesize,tilesize,tilesize)
+							end
+						--love.graphics.setColor(0,0,0,90)
+						--love.graphics.rectangle("fill",x*tilesize,y*tilesize,tilesize,tilesize)
+					end
+					
+					--love.graphics.print(mapheight[y][x], x*tilesize +10, y*tilesize+10)
+					
+					mapblocked[y][x].blocked = true
+				end
+			end
+		end
+	love.graphics.setCanvas()
 	
 	
 	--camera code found on http://nova-fusion.com/2011/04/19/cameras-in-love2d-part-1-the-basics/
@@ -402,24 +328,24 @@ function love.update(dt)
 	
 	--Character movement, pretty straightforward
 	if love.keyboard.isDown("d") then 
-		if map[yrange][xrange+1] >=10 then
+		--if map[yrange][xrange+1] ==2 then
 			character.x = character.x + charspeed
-		end
+		--end
     end
 	if love.keyboard.isDown("a") then 
-		if map[yrange][xrange-1] >=10 then
+		--if map[yrange][xrange-1] ==2 then
 			character.x = character.x - charspeed
-		end
+		--end
     end
     if love.keyboard.isDown("w") then 
-		if map[yrange-1][xrange] >=10 then
+		--if map[yrange-1][xrange] ==2 then
 			character.y = character.y - charspeed
-		end
+		--end
     end
     if love.keyboard.isDown("s") then 
-		if map[yrange+1][xrange] >=10 then
+		--if map[yrange+1][xrange] ==2 then
 			character.y = character.y + charspeed
-		end
+		--end
     end
     
     --Keeps character bound within a certain area of the screen
@@ -452,7 +378,7 @@ function love.update(dt)
 	--these will be 
 	xrangenorm = math.floor((camera.x+400)/tilesize)
 	yrangenorm = math.floor((camera.y+400)/tilesize)
-	
+	--[[
     if togglecount > 1 then
 		if love.keyboard.isDown("m") then 
 			if minimapdraw == true then
@@ -464,6 +390,21 @@ function love.update(dt)
 			end
 		end
 	end
+	]]
+	
+	
+	if love.keyboard.isDown("m") then 
+		if minimapdraw == true and maptoggle == false then
+			minimapdraw = false
+		elseif minimapdraw == false and maptoggle == false then
+			minimapdraw = true
+		end
+		maptoggle=true
+	else
+		maptoggle = false
+	end
+	
+	
 		
     if togglecount > 1 then
 		if love.keyboard.isDown("l") then 
@@ -476,9 +417,55 @@ function love.update(dt)
 			end
 		end
 	end
+    --[[
     
+    if love.mouse.isDown("wd") then
+		mousewheelitem = mousewheelitem -1
+		if mousewheelitem < 1 then
+			mousewheelitem = 8
+		end
+	end
+	if love.mouse.isDown("wu") then
+		mousewheelitem = mousewheelitem +1
+		if mousewheelitem >8 then
+			mousewheelitem = 1
+		end
+	end
     
+    ]]
     
+    wheelitemcount = math.floor(wheelitemcount - (dt*200))
+    
+    if wheelitemcount < 0 then
+		wheelitemcount = 0
+	end
+    
+    if love.mouse.isDown("l") then
+		xmouse, ymouse = love.mouse.getPosition()
+		y = math.floor((camera.y + ymouse) / tilesize)---yrangenorm --math.floor(mapy/tilesize)+yrangenorm-tilesize
+		x = math.floor((camera.x + xmouse) / tilesize)---xrangenorm --math.floor(mapx/tilesize)+xrangenorm-tilesize
+		if y > ymin and y < ymax and x > xmin and x < xmax then
+			map[y][x] = mousewheelitem
+			love.graphics.setCanvas(minimapcanvas)
+				if map[y][x]==1 then
+					love.graphics.setColor(65,150,240,255)
+				elseif map[y][x]==2 or map[y][x]==8 then
+					love.graphics.setColor(75,190,60,255)
+				elseif map[y][x]==5 or map[y][x]==6 then
+					love.graphics.setColor(120,95,0,255)
+				elseif map[y][x]==4 then
+					love.graphics.setColor(220,210,120,255)
+				elseif map[y][x]==3 then
+					love.graphics.setColor(55,170,40,255)
+				else
+					love.graphics.setColor(0,255,0,255)
+				end
+				love.graphics.rectangle("fill",x,y,1,1)
+			love.graphics.setCanvas()
+		end
+	end
+		
+    --[[
     if love.mouse.isDown("l") then
 		xmouse, ymouse = love.mouse.getPosition()
 		--map[math.floor(mapy/tilesize)+yrange - 20][math.floor(mapx/tilesize)+xrange - 20]=map[math.floor(mapy/tilesize)+yrange - 20][math.floor(mapx/tilesize)+xrange - 20]+3
@@ -486,36 +473,36 @@ function love.update(dt)
 		y = math.floor((camera.y + ymouse) / tilesize)---yrangenorm --math.floor(mapy/tilesize)+yrangenorm-tilesize
 		x = math.floor((camera.x + xmouse) / tilesize)---xrangenorm --math.floor(mapx/tilesize)+xrangenorm-tilesize
 		if y > ymin and y < ymax and x > xmin and x < xmax then
-			if map[y-1][x] < 25 then
-				map[y-1][x] = map[y-1][x] + 1
+			if mapheight[y-1][x] < 25 then
+				mapheight[y-1][x] = mapheight[y-1][x] + 1
 			end
-			if map[y][x] < 25 then
-				map[y][x] = map[y][x] + 1
+			if mapheight[y][x] < 25 then
+				mapheight[y][x] = mapheight[y][x] + 1
 			end
-			if map[y+1][x] < 25 then
-				map[y+1][x] = map[y+1][x] + 1
+			if mapheight[y+1][x] < 25 then
+				mapheight[y+1][x] = mapheight[y+1][x] + 1
 			end
-			if map[y-1][x-1] < 25 then
-				map[y-1][x-1] = map[y-1][x-1] + 1
+			if mapheight[y-1][x-1] < 25 then
+				mapheight[y-1][x-1] = mapheight[y-1][x-1] + 1
 			end
-			if map[y][x-1] < 25 then
-				map[y][x-1] = map[y][x-1] + 1
+			if mapheight[y][x-1] < 25 then
+				mapheight[y][x-1] = mapheight[y][x-1] + 1
 			end
-			if map[y+1][x-1] < 25 then
-				map[y+1][x-1] = map[y+1][x-1] + 1
+			if mapheight[y+1][x-1] < 25 then
+				mapheight[y+1][x-1] = mapheight[y+1][x-1] + 1
 			end
-			if map[y-1][x+1] < 25 then
-				map[y-1][x+1] = map[y-1][x+1] + 1
+			if mapheight[y-1][x+1] < 25 then
+				mapheight[y-1][x+1] = mapheight[y-1][x+1] + 1
 			end
-			if map[y][x+1] < 25 then
-				map[y][x+1] = map[y][x+1] + 1
+			if mapheight[y][x+1] < 25 then
+				mapheight[y][x+1] = mapheight[y][x+1] + 1
 			end
-			if map[y+1][x+1] < 25 then
-				map[y+1][x+1] = map[y+1][x+1] + 1
+			if mapheight[y+1][x+1] < 25 then
+				mapheight[y+1][x+1] = mapheight[y+1][x+1] + 1
 			end
 		end
 		
-	end
+	end]]
 	
 	if love.mouse.isDown("r") then
 		xmouse, ymouse = love.mouse.getPosition()
@@ -524,32 +511,32 @@ function love.update(dt)
 		y = math.floor((camera.y + ymouse) / tilesize)---yrangenorm --math.floor(mapy/tilesize)+yrangenorm-tilesize
 		x = math.floor((camera.x + xmouse) / tilesize)---xrangenorm --math.floor(mapx/tilesize)+xrangenorm-tilesize
 		if y > ymin and y < ymax and x > xmin and x < xmax then
-			if map[y-1][x] > 1 then
-				map[y-1][x] = map[y-1][x] - 1
+			if mapheight[y-1][x] > 1 then
+				mapheight[y-1][x] = mapheight[y-1][x] - 1
 			end
-			if map[y][x] > 1 then
-				map[y][x] = map[y][x] - 1
+			if mapheight[y][x] > 1 then
+				mapheight[y][x] = mapheight[y][x] - 1
 			end
-			if map[y+1][x] > 1 then
-				map[y+1][x] = map[y+1][x] - 1
+			if mapheight[y+1][x] > 1 then
+				mapheight[y+1][x] = mapheight[y+1][x] - 1
 			end
-			if map[y-1][x-1] > 1 then
-				map[y-1][x-1] = map[y-1][x-1] - 1
+			if mapheight[y-1][x-1] > 1 then
+				mapheight[y-1][x-1] = mapheight[y-1][x-1] - 1
 			end
-			if map[y][x-1] > 1 then
-				map[y][x-1] = map[y][x-1] - 1
+			if mapheight[y][x-1] > 1 then
+				mapheight[y][x-1] = mapheight[y][x-1] - 1
 			end
-			if map[y+1][x-1] > 1 then
-				map[y+1][x-1] = map[y+1][x-1] - 1
+			if mapheight[y+1][x-1] > 1 then
+				mapheight[y+1][x-1] = mapheight[y+1][x-1] - 1
 			end
-			if map[y-1][x+1] > 1 then
-				map[y-1][x+1] = map[y-1][x+1] - 1
+			if mapheight[y-1][x+1] > 1 then
+				mapheight[y-1][x+1] = mapheight[y-1][x+1] - 1
 			end
-			if map[y][x+1] > 1 then
-				map[y][x+1] = map[y][x+1] - 1
+			if mapheight[y][x+1] > 1 then
+				mapheight[y][x+1] = mapheight[y][x+1] - 1
 			end
-			if map[y+1][x+1] > 1 then
-				map[y+1][x+1] = map[y+1][x+1] - 1
+			if mapheight[y+1][x+1] > 1 then
+				mapheight[y+1][x+1] = mapheight[y+1][x+1] - 1
 			end
 		end
 	end
@@ -653,28 +640,34 @@ function love.draw()
 				--map[x][y]=math.random(0,3)
 				if mapblocked[y][x].blocked == false or lighting == false or cave == false then
 					if map[y][x]>=0 then
-						if map[y][x]<=10 then
-							love.graphics.setColor(map[y][x]*3+200,map[y][x]*3+200,map[y][x]*3+200,255)
+						if map[y][x]==1 then
+							love.graphics.setColor(mapheight[y][x]*3+200,mapheight[y][x]*3+200,mapheight[y][x]*3+200,255)
 							love.graphics.draw(water,x*tilesize, y*tilesize)
-						elseif map[y][x]<=50 then
-							love.graphics.setColor(255-map[y][x]*3,255-map[y][x]*3,255-map[y][x]*3,255)
-							love.graphics.draw(grass,x*tilesize, y*tilesize)
-						else
-							love.graphics.setColor(0,255,0,255)
-							love.graphics.rectangle("fill",x*tilesize,y*tilesize,tilesize,tilesize)
-						end
-						if map[y][x]==13 then
-							love.graphics.setColor(210,210,210,255)
+						elseif map[y][x]==2 then
+							--love.graphics.setColor(mapheight[y][x]*3+180,mapheight[y][x]*3+180,mapheight[y][x]*3+180,255)
+							love.graphics.setColor(255-mapheight[y][x]*3,255-mapheight[y][x]*3,255-mapheight[y][x]*3,255)
+							love.graphics.draw(grass,x*tilesize, y*tilesize)	
+						elseif map[y][x]==3 then
+							love.graphics.setColor(255-mapheight[y][x]*3,255-mapheight[y][x]*3,255-mapheight[y][x]*3,255)
 							love.graphics.draw(tree,x*tilesize, y*tilesize)
-						elseif map[y][x]==101 then
+						elseif map[y][x]==4 then
+							love.graphics.setColor(255-mapheight[y][x]*3,255-mapheight[y][x]*3,255-mapheight[y][x]*3,255)
+							love.graphics.draw(beach,x*tilesize, y*tilesize)
+						elseif map[y][x]==5 then
 							love.graphics.setColor(210,210,210,255)
 							love.graphics.draw(horiBridge,x*tilesize, y*tilesize)
-						elseif map[y][x]==102 then
+						elseif map[y][x]==6 then
 							love.graphics.setColor(210,210,210,255)
 							love.graphics.draw(vertBridge,x*tilesize, y*tilesize)
-						elseif map[y][x]==103 then
-							love.graphics.setColor(210,210,210,255)
+						elseif map[y][x]==7 then
+							love.graphics.setColor(255-mapheight[y][x]*3,255-mapheight[y][x]*3,255-mapheight[y][x]*3,255)
 							love.graphics.draw(waterLadder,x*tilesize, y*tilesize)
+						elseif map[y][x]==8 then
+							love.graphics.setColor(255-mapheight[y][x]*3,255-mapheight[y][x]*3,255-mapheight[y][x]*3,255)
+							love.graphics.draw(longGrass,x*tilesize, y*tilesize)
+						else 
+							love.graphics.setColor(0,255,0,255)
+							love.graphics.rectangle("fill",x*tilesize,y*tilesize,tilesize,tilesize)
 						end
 						
 					end
@@ -693,31 +686,63 @@ function love.draw()
 					--love.graphics.rectangle("fill",x*tilesize,y*tilesize,tilesize,tilesize)
 				end
 				
-				--love.graphics.print(map[y][x], x*tilesize +10, y*tilesize+10)
+				--love.graphics.print(mapheight[y][x], x*tilesize +10, y*tilesize+10)
 				
 				mapblocked[y][x].blocked = true
 			end
 		end
 	end
+	
+	
+	love.graphics.setColor(255,255,255,255)
+	love.graphics.draw(characterimg,character.x,character.y)
+	
+	
+	--love.graphics.draw(mapcanvas)
+	love.graphics.setColor(0,0,0,255)
+	love.graphics.rectangle("fill", 585+camera.x, camera.y, 215, 215)
+	love.graphics.setColor(255,255,255,255)
+	minimapcanvas:setFilter("nearest", "nearest")
+	minimapquad = love.graphics.newQuad(xrange - 26, yrange - 26, 51, 51, 500,500)
+	love.graphics.drawq(minimapcanvas, minimapquad,590+camera.x, 5+camera.y,0,4,4)
+	
+	
+	love.graphics.setColor(0,0,0,255)
+	love.graphics.rectangle("fill",camera.x+535,camera.y+75,42,42)
+	
+	
+	-----funfunfunfunfufnunfufnction
+	displayMouseItem(mousewheelitem-1, wheelitemcount, 40, 0)
+	displayMouseItem(mousewheelitem, 255, 40, 40)
+	displayMouseItem(mousewheelitem+1, wheelitemcount, 40, 80)
+	
 	--minimapdraw=false
 	if minimapdraw==true then
-	
 		love.graphics.setColor(0,0,0,255)
-		love.graphics.rectangle("fill", 585+camera.x, camera.y, 215, 215)
-		
-		
+		--love.graphics.line(camera.x+150, camera.y+150,camera.x+650,camera.y+150,camera.x+650,camera.y+650,camera.x+150,camera.y+650,camera.x+150,camera.y+150)
+		love.graphics.rectangle("line",camera.x+149, camera.y+249,503,503)
+		love.graphics.setColor(255,255,255,180)
+		--love.graphics.rectangle("fill", 585+camera.x, camera.y, 215, 215)
+		love.graphics.draw(minimapcanvas, camera.x +150, camera.y +250)
+		love.graphics.setColor(255,0,0,255)
+		love.graphics.circle("fill",xrange+camera.x+150, yrange+camera.y+250,3,10)
+		--[[
 		--MINIMAP DRAWING
 		for x=0,50 do
 			for y=0,50 do
 				if y+yrangenorm-25 > ymin and y+yrangenorm-25 < ymax and x+xrangenorm-25 > xmin and x+xrangenorm-25 < xmax then
 					--if minimap[y+yrange-50][x+xrange-50].mapvisible == true then
 						if map[y+yrangenorm-25][x+xrangenorm-25]>=0 then
-							if map[y+yrangenorm-25][x+xrangenorm-25]<=10 then
+							if map[y+yrangenorm-25][x+xrangenorm-25]==1 then
 								love.graphics.setColor(65,150,240,255)
-							elseif map[y+yrangenorm-25][x+xrangenorm-25]<=50 then
+							elseif map[y+yrangenorm-25][x+xrangenorm-25]==2 or map[y+yrangenorm-25][x+xrangenorm-25]==8 then
 								love.graphics.setColor(75,190,60,255)
-							elseif map[y+yrangenorm-25][x+xrangenorm-25]==101 or map[y+yrangenorm-25][x+xrangenorm-25]==102 then
+							elseif map[y+yrangenorm-25][x+xrangenorm-25]==5 or map[y+yrangenorm-25][x+xrangenorm-25]==6 then
 								love.graphics.setColor(120,95,0,255)
+							elseif map[y+yrangenorm-25][x+xrangenorm-25]==4 then
+								love.graphics.setColor(220,210,120,255)
+							elseif map[y+yrangenorm-25][x+xrangenorm-25]==3 then
+								love.graphics.setColor(55,170,40,255)
 							else
 								love.graphics.setColor(0,255,0,255)
 							end
@@ -726,17 +751,24 @@ function love.draw()
 					--end
 				end
 			end
-		end
+		end]]
 		love.graphics.setColor(255,255,255,255)
 		love.graphics.print("Minimap on", 150 +camera.x, 10+camera.y)
 	else
 		love.graphics.setColor(255,255,255,255)
 		love.graphics.print("Minimap off", 150 +camera.x, 10+camera.y)
 	end
+	
+	
+	
+	
+	
+	
 	--A bunch of stats displayed on screen to make things easier to debug
 	love.graphics.setColor(255,255,255,255)
+
 	--love.graphics.draw(,x*tilesize, y*tilesize)
-	love.graphics.draw(characterimg,character.x,character.y)
+	
 	
 	love.graphics.setColor(255,255,255,255)
 	love.graphics.print("Current FPS: "..tostring(love.timer.getFPS( )), 10+math.floor(camera.x), 10+math.floor(camera.y))
@@ -765,6 +797,52 @@ function roundnum (int)
 		return math.ceil(int)
 	else
 		return math.floor(int)
+	end
+end
+
+
+function love.mousepressed( x, y, button )
+	if button == "wd" then
+		mousewheelitem = mousewheelitem +1
+		if mousewheelitem >8 then
+			mousewheelitem = 1
+		end
+		wheelitemcount = 255
+	end
+	if button == "wu" then
+		mousewheelitem = mousewheelitem -1
+		if mousewheelitem < 1 then
+			mousewheelitem = 8
+		end
+		wheelitemcount = 255
+	end
+end
+
+function displayMouseItem (mousewheelitem, alpha, xpos, ypos)
+	if mousewheelitem == 1 then
+		love.graphics.setColor(255,255,255,alpha)
+		love.graphics.draw(water,camera.x+500+xpos,camera.y+40+ypos)
+	elseif mousewheelitem == 2 then
+		love.graphics.setColor(255,255,255,alpha)
+		love.graphics.draw(grass,camera.x+500+xpos,camera.y+40+ypos)
+	elseif mousewheelitem == 3 then
+		love.graphics.setColor(255,255,255,alpha)
+		love.graphics.draw(tree,camera.x+500+xpos,camera.y+40+ypos)
+	elseif mousewheelitem == 4 then
+		love.graphics.setColor(255,255,255,alpha)
+		love.graphics.draw(beach,camera.x+500+xpos,camera.y+40+ypos)
+	elseif mousewheelitem == 5 then
+		love.graphics.setColor(255,255,255,alpha)
+		love.graphics.draw(horiBridge,camera.x+500+xpos,camera.y+40+ypos)
+	elseif mousewheelitem == 6 then
+		love.graphics.setColor(255,255,255,alpha)
+		love.graphics.draw(vertBridge,camera.x+500+xpos,camera.y+40+ypos)
+	elseif mousewheelitem == 7 then
+		love.graphics.setColor(255,255,255,alpha)
+		love.graphics.draw(waterLadder,camera.x+500+xpos,camera.y+40+ypos)
+	elseif mousewheelitem == 8 then
+		love.graphics.setColor(255,255,255,alpha)
+		love.graphics.draw(longGrass,camera.x+500+xpos,camera.y+40+ypos)
 	end
 end
 

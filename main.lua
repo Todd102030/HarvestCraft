@@ -102,6 +102,12 @@ function love.load()
 	minimapdraw = true
 	lighting = false
 	
+	
+	maptypetoggle = true
+	mapheighttoggle = false
+	objectmaptoggle = false
+	
+	
 	watercount = 0
 	togglecount = 0
 	
@@ -110,18 +116,20 @@ function love.load()
 	mapblocked={}
 	minimap={}
 	mapheight={}
+	objectmap={}
 	for i=ymin,ymax do
 		map[i]={}
 		mapblocked[i]={}
 		minimap[i]={}
 		mapheight[i]={}
+		objectmap[i]={}
 		for n=xmin,xmax do
 			mapblocked[i][n] = {}
 			map[i][n]=1
 			mapheight[i][n]=1
 			minimap[i][n]={}
 			minimap[i][n].mapvisible = false
-			
+			objectmap[i][n]=0
 		end
 	end
 	
@@ -130,7 +138,7 @@ function love.load()
 	genBridges(400)
 	genPonds(100)	
 	genTrees(20000)
-	genLongGrass(70000)
+	--genLongGrass(70000)
 	
 	
 	
@@ -165,30 +173,31 @@ function love.load()
 			for y=0,500 do
 				--if y+yrangenorm-25 > ymin and y+yrangenorm-25 < ymax and x+xrangenorm-25 > xmin and x+xrangenorm-25 < xmax then
 					--if minimap[y+yrange-50][x+xrange-50].mapvisible == true then
-				if map[y][x]>=0 then
-					if map[y][x]==1 then
-						love.graphics.setColor(65,150,240,255)
-					elseif map[y][x]==2 or map[y][x]==8 then
-						love.graphics.setColor(75,190,60,255)
-					elseif map[y][x]==5 or map[y][x]==6 then
-						love.graphics.setColor(120,95,0,255)
-					elseif map[y][x]==4 then
-						love.graphics.setColor(220,210,120,255)
-					elseif map[y][x]==3 then
-						love.graphics.setColor(55,170,40,255)
-					else
-						love.graphics.setColor(0,255,0,255)
-					end
-					love.graphics.rectangle("fill",x,y,1,1)
-					--love.graphics.rectangle("fill",x--[[*minimapsize]],y--[[*minimapsize]],minimapsize,minimapsize)
+				--if map[y][x]>=0 then
+				if map[y][x]==1 then
+					love.graphics.setColor(65,150,240,255)
+				elseif map[y][x]==2 then
+					love.graphics.setColor(75,190,60,255)
+				elseif map[y][x]==4 then
+					love.graphics.setColor(220,210,120,255)
+				else
+					love.graphics.setColor(0,255,0,255)
 				end
+				if objectmap[y][x]==5 or objectmap[y][x]==6 then
+					love.graphics.setColor(120,95,0,255)
+				elseif objectmap[y][x]==3 then
+					love.graphics.setColor(55,170,40,255)
+				end
+				love.graphics.rectangle("fill",x,y,1,1)
+					--love.graphics.rectangle("fill",x--[[*minimapsize]],y--[[*minimapsize]],minimapsize,minimapsize)
+				--end
 					--end
 				--end
 			end
 		end
 	love.graphics.setCanvas()
 		
-	
+	--[[
 	love.graphics.setCanvas(mapcanvas)
 		mapcanvas:clear()
 		for x=xmin,xmax do
@@ -243,14 +252,14 @@ function love.load()
 						--love.graphics.rectangle("fill",x*tilesize,y*tilesize,tilesize,tilesize)
 					end
 					
-					--love.graphics.print(mapheight[y][x], x*tilesize +10, y*tilesize+10)
+					--love.graphics.print(map[y][x], x*tilesize +10, y*tilesize+10)
 					
 					mapblocked[y][x].blocked = true
 				end
 			end
 		end
 	love.graphics.setCanvas()
-	
+	]]
 	
 	--camera code found on http://nova-fusion.com/2011/04/19/cameras-in-love2d-part-1-the-basics/
 	--very useful, but I don't know exactly what it's doing
@@ -405,6 +414,40 @@ function love.update(dt)
 	end
 	
 	
+	if love.keyboard.isDown("z") then 
+		if maptypetoggle == true and maptoggle1 == false then
+			maptypetoggle = false
+		elseif maptypetoggle == false and maptoggle1 == false then
+			maptypetoggle = true
+		end
+		maptoggle1=true
+	else
+		maptoggle1 = false
+	end
+	
+	if love.keyboard.isDown("x") then 
+		if mapheighttoggle == true and maptoggle2 == false then
+			mapheighttoggle = false
+		elseif mapheighttoggle == false and maptoggle2 == false then
+			mapheighttoggle = true
+		end
+		maptoggle2=true
+	else
+		maptoggle2 = false
+	end
+	
+	if love.keyboard.isDown("c") then 
+		if objectmaptoggle == true and maptoggle3 == false then
+			objectmaptoggle = false
+		elseif objectmaptoggle == false and maptoggle3 == false then
+			objectmaptoggle = true
+		end
+		maptoggle3=true
+	else
+		maptoggle3 = false
+	end
+	
+	
 		
     if togglecount > 1 then
 		if love.keyboard.isDown("l") then 
@@ -445,17 +488,22 @@ function love.update(dt)
 		y = math.floor((camera.y + ymouse) / tilesize)---yrangenorm --math.floor(mapy/tilesize)+yrangenorm-tilesize
 		x = math.floor((camera.x + xmouse) / tilesize)---xrangenorm --math.floor(mapx/tilesize)+xrangenorm-tilesize
 		if y > ymin and y < ymax and x > xmin and x < xmax then
-			map[y][x] = mousewheelitem
+			
 			love.graphics.setCanvas(minimapcanvas)
 				if map[y][x]==1 then
+					map[y][x] = mousewheelitem
 					love.graphics.setColor(65,150,240,255)
-				elseif map[y][x]==2 or map[y][x]==8 then
+				elseif map[y][x]==2 then
+					map[y][x] = mousewheelitem
 					love.graphics.setColor(75,190,60,255)
 				elseif map[y][x]==5 or map[y][x]==6 then
+					objectmap[y][x] = mousewheelitem
 					love.graphics.setColor(120,95,0,255)
 				elseif map[y][x]==4 then
+					map[y][x] = mousewheelitem
 					love.graphics.setColor(220,210,120,255)
 				elseif map[y][x]==3 then
+					objectmap[y][x] = mousewheelitem
 					love.graphics.setColor(55,170,40,255)
 				else
 					love.graphics.setColor(0,255,0,255)
@@ -669,7 +717,19 @@ function love.draw()
 							love.graphics.setColor(0,255,0,255)
 							love.graphics.rectangle("fill",x*tilesize,y*tilesize,tilesize,tilesize)
 						end
-						
+						if objectmap[y][x]==5 then
+							love.graphics.setColor(210,210,210,255)
+							love.graphics.draw(horiBridge,x*tilesize, y*tilesize)
+						elseif objectmap[y][x]==6 then
+							love.graphics.setColor(210,210,210,255)
+							love.graphics.draw(vertBridge,x*tilesize, y*tilesize)
+						elseif objectmap[y][x]==3 then
+							love.graphics.setColor(210,210,210,255)
+							love.graphics.draw(tree,x*tilesize, y*tilesize)
+						elseif objectmap[y][x]==8 then
+							love.graphics.setColor(210,210,210,255)
+							love.graphics.draw(longGrass,x*tilesize, y*tilesize)
+						end
 					end
 				else
 					if map[y][x]<=10 then
@@ -685,9 +745,18 @@ function love.draw()
 					--love.graphics.setColor(0,0,0,90)
 					--love.graphics.rectangle("fill",x*tilesize,y*tilesize,tilesize,tilesize)
 				end
-				
-				--love.graphics.print(mapheight[y][x], x*tilesize +10, y*tilesize+10)
-				
+				if maptypetoggle == true then
+					love.graphics.setColor(255,0,0,255)
+					love.graphics.print(map[y][x], x*tilesize +5, y*tilesize+10)
+				end
+				if mapheighttoggle == true then
+					love.graphics.setColor(0,255,0,255)
+					love.graphics.print(mapheight[y][x], x*tilesize +10, y*tilesize+10)
+				end
+				if objectmaptoggle == true then
+					love.graphics.setColor(255,255,255,255)
+					love.graphics.print(objectmap[y][x], x*tilesize +15, y*tilesize+10)
+				end
 				mapblocked[y][x].blocked = true
 			end
 		end
