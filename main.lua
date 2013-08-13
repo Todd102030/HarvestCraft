@@ -59,16 +59,16 @@ function love.load()
 	waterLadder = love.graphics.newImage("resources/tiles/WaterLadder.jpg")
 
 	love.window.setCaption("Terrain Generation Alpha")
+	--love.window.setMode(tonumber(arg[2]),tonumber(arg[3]),{vsync = false, resizable=true})
 	love.window.setMode(800,800,{vsync = false})
-
 	--length/width of map and tile squares 
 	minimapsize = 4
 	tilesize = 32
 
 	--main character
 	character = {}
-	character.x = 400
-	character.y = 400
+	character.x = 700
+	character.y = 700
 	
 	--variables to aid in making the camera follow the character; xrange
 	xrange = (character.x + 16) / tilesize
@@ -378,7 +378,7 @@ function love.update(dt)
 	--these will be 
 	xrangenorm = math.floor((camera.x+400)/tilesize)
 	yrangenorm = math.floor((camera.y+400)/tilesize)
-	
+	--[[
     if togglecount > 1 then
 		if love.keyboard.isDown("m") then 
 			if minimapdraw == true then
@@ -390,6 +390,21 @@ function love.update(dt)
 			end
 		end
 	end
+	]]
+	
+	
+	if love.keyboard.isDown("m") then 
+		if minimapdraw == true and maptoggle == false then
+			minimapdraw = false
+		elseif minimapdraw == false and maptoggle == false then
+			minimapdraw = true
+		end
+		maptoggle=true
+	else
+		maptoggle = false
+	end
+	
+	
 		
     if togglecount > 1 then
 		if love.keyboard.isDown("l") then 
