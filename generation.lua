@@ -5,10 +5,10 @@ function genIslands(amount)
 	for i=1,amount do
 		mapy = math.random(ymin,ymax)
 		mapx = math.random(xmin,xmax)
-		mapheight[mapy][mapx]=math.random(1,20)
+		mapheight[mapy][mapx]=math.random(1,8)
 		
-		xrand = math.random(5,12)
-		--yrand = math.random(4,10)
+		xrand = math.random(5,15)
+		--yrand = math.random(5,15)
 		yrand=xrand
 		
 		for y = mapy - yrand, mapy + yrand do
@@ -48,7 +48,7 @@ function genIslands(amount)
 					end
 					if mapheight[y][x] < 10 then
 						map[y][x] = 1
-					elseif mapheight[y][x] < 24 then
+					elseif mapheight[y][x] <= 24 then
 						map[y][x] = 2
 					end
 					if mapheight[y][x] == 9 or mapheight[y][x] == 8 --[[or mapheight[y][x] == 7 or mapheight[y][x] == 6]] then

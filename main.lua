@@ -96,7 +96,7 @@ function love.load()
 	
 	
 	mousewheelitem = 1
-	
+	wheelitemcount = 255
 	
 	
 	minimapdraw = true
@@ -126,7 +126,7 @@ function love.load()
 	end
 	
 	
-	genIslands(2000)
+	genIslands(1200)
 	genBridges(400)
 	genPonds(100)	
 	genTrees(20000)
@@ -418,6 +418,13 @@ function love.update(dt)
 	end
     
     ]]
+    
+    wheelitemcount = math.floor(wheelitemcount - (dt*200))
+    
+    if wheelitemcount < 0 then
+		wheelitemcount = 0
+	end
+    
     if love.mouse.isDown("l") then
 		xmouse, ymouse = love.mouse.getPosition()
 		y = math.floor((camera.y + ymouse) / tilesize)---yrangenorm --math.floor(mapy/tilesize)+yrangenorm-tilesize
@@ -686,13 +693,13 @@ function love.draw()
 	
 	
 	love.graphics.setColor(0,0,0,255)
-	love.graphics.rectangle("fill",camera.x+495,camera.y+35,42,122)
+	love.graphics.rectangle("fill",camera.x+535,camera.y+75,42,42)
 	
 	
 	-----funfunfunfunfufnunfufnction
-	displayMouseItem(mousewheelitem-1, 180, 0, 0)
-	displayMouseItem(mousewheelitem, 255, 0, 40)
-	displayMouseItem(mousewheelitem+1, 180, 0, 80)
+	displayMouseItem(mousewheelitem-1, wheelitemcount, 40, 0)
+	displayMouseItem(mousewheelitem, 255, 40, 40)
+	displayMouseItem(mousewheelitem+1, wheelitemcount, 40, 80)
 	
 	--minimapdraw=false
 	if minimapdraw==true then
@@ -785,12 +792,14 @@ function love.mousepressed( x, y, button )
 		if mousewheelitem >8 then
 			mousewheelitem = 1
 		end
+		wheelitemcount = 255
 	end
 	if button == "wu" then
 		mousewheelitem = mousewheelitem -1
 		if mousewheelitem < 1 then
 			mousewheelitem = 8
 		end
+		wheelitemcount = 255
 	end
 end
 
