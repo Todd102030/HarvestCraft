@@ -99,11 +99,11 @@ function love.load()
 	wheelitemcount = 255
 	
 	
-	minimapdraw = true
+	minimapdraw = false
 	lighting = false
 	
 	
-	maptypetoggle = true
+	maptypetoggle = false
 	mapheighttoggle = false
 	objectmaptoggle = false
 	
@@ -490,19 +490,19 @@ function love.update(dt)
 		if y > ymin and y < ymax and x > xmin and x < xmax then
 			
 			love.graphics.setCanvas(minimapcanvas)
-				if map[y][x]==1 then
+				if mousewheelitem==1 then
 					map[y][x] = mousewheelitem
 					love.graphics.setColor(65,150,240,255)
-				elseif map[y][x]==2 then
+				elseif mousewheelitem==2 then
 					map[y][x] = mousewheelitem
 					love.graphics.setColor(75,190,60,255)
-				elseif map[y][x]==5 or map[y][x]==6 then
+				elseif mousewheelitem==5 or mousewheelitem==6 then
 					objectmap[y][x] = mousewheelitem
 					love.graphics.setColor(120,95,0,255)
-				elseif map[y][x]==4 then
+				elseif mousewheelitem==4 then
 					map[y][x] = mousewheelitem
 					love.graphics.setColor(220,210,120,255)
-				elseif map[y][x]==3 then
+				elseif mousewheelitem==3 then
 					objectmap[y][x] = mousewheelitem
 					love.graphics.setColor(55,170,40,255)
 				else
@@ -762,6 +762,13 @@ function love.draw()
 		end
 	end
 	
+	xmouse, ymouse = love.mouse.getPosition()
+	y = math.floor((camera.y + ymouse) / tilesize)---yrangenorm --math.floor(mapy/tilesize)+yrangenorm-tilesize
+	x = math.floor((camera.x + xmouse) / tilesize)---xrangenorm --math.floor(mapx/tilesize)+xrangenorm-tilesize
+	if y > ymin and y < ymax and x > xmin and x < xmax then
+		love.graphics.setColor(200,20,20,255)
+		love.graphics.rectangle("line", x * tilesize, y*tilesize, tilesize, tilesize)
+	end
 	
 	love.graphics.setColor(255,255,255,255)
 	love.graphics.draw(characterimg,character.x,character.y)
