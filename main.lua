@@ -370,28 +370,32 @@ function love.update(dt)
 	
 	togglecount = togglecount + dt
 	
+	
+	
+	--xrange = math.floor((character.x + 16) / tilesize)
+	--yrange = math.floor((character.y + 16) / tilesize)
 	--and map[yrange][xrange] >=10 
 	
 	--Character movement, pretty straightforward
 	if love.keyboard.isDown("d") then 
-		--if map[yrange][xrange+1] ==2 then
+		if objectmap[yrange][math.floor((character.x + 16 + charspeed) / tilesize)] ~=9 then
 			character.x = character.x + charspeed
-		--end
+		end
     end
 	if love.keyboard.isDown("a") then 
-		--if map[yrange][xrange-1] ==2 then
+		if objectmap[yrange][math.floor((character.x + 16 - charspeed) / tilesize)] ~=9 then
 			character.x = character.x - charspeed
-		--end
+		end
     end
     if love.keyboard.isDown("w") then 
-		--if map[yrange-1][xrange] ==2 then
+		if objectmap[math.floor((character.y + 16 - charspeed) / tilesize)][xrange] ~=9 then
 			character.y = character.y - charspeed
-		--end
+		end
     end
     if love.keyboard.isDown("s") then 
-		--if map[yrange+1][xrange] ==2 then
+		if objectmap[math.floor((character.y + 16 + charspeed) / tilesize)][xrange] ~=9 then
 			character.y = character.y + charspeed
-		--end
+		end
     end
     
     --Keeps character bound within a certain area of the screen
