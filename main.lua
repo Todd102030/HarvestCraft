@@ -43,7 +43,43 @@ require "generation"
 
 function love.load()
 	
+	iconimg = love.image.newImageData("resources/tiles/character.png")
 	characterimg = love.graphics.newImage("resources/tiles/character.png")
+	
+	sprites = love.graphics.newImage("resources/tiles/Spritesheet.png")
+	
+	grass = love.graphics.newQuad(0*32, 0*32, 32, 32, 640,128)
+	water1 = love.graphics.newQuad(1*32, 0*32, 32, 32, 640,128)
+	water2 = love.graphics.newQuad(1*32, 0*32, 32, 32, 640,128)
+	water3 = love.graphics.newQuad(1*32, 0*32, 32, 32, 640,128)
+	water4 = love.graphics.newQuad(1*32, 0*32, 32, 32, 640,128)
+	beach = love.graphics.newQuad(2*32, 0*32, 32, 32, 640,128)
+	tree = love.graphics.newQuad(0*32, 1*32, 32, 32, 640,128)
+	longGrass = love.graphics.newQuad(6*32, 0*32, 32, 32, 640,128)
+	horiBridge = love.graphics.newQuad(0*32, 3*32, 32, 32, 640,128)
+	vertBridge = love.graphics.newQuad(1*32, 3*32, 32, 32, 640,128)
+	waterLadder = love.graphics.newQuad(6*32, 0*32, 32, 32, 640,128)
+	
+	fence = love.graphics.newQuad(0*32, 2*32, 32, 32, 640,128)
+	fence1 = love.graphics.newQuad(1*32, 2*32, 32, 32, 640,128)
+	fence2 = love.graphics.newQuad(3*32, 2*32, 32, 32, 640,128)
+	fence3 = love.graphics.newQuad(2*32, 2*32, 32, 32, 640,128)
+	fence4 = love.graphics.newQuad(4*32, 2*32, 32, 32, 640,128)
+	fence12 = love.graphics.newQuad(7*32, 2*32, 32, 32, 640,128)
+	fence23 = love.graphics.newQuad(9*32, 2*32, 32, 32, 640,128)
+	fence34 = love.graphics.newQuad(10*32, 2*32, 32, 32, 640,128)
+	fence41 = love.graphics.newQuad(8*32, 2*32, 32, 32, 640,128)
+	fence13 = love.graphics.newQuad(5*32, 2*32, 32, 32, 640,128)
+	fence24 = love.graphics.newQuad(6*32, 2*32, 32, 32, 640,128)
+	fence123 = love.graphics.newQuad(14*32, 2*32, 32, 32, 640,128)
+	fence234 = love.graphics.newQuad(11*32, 2*32, 32, 32, 640,128)
+	fence341 = love.graphics.newQuad(12*32, 2*32, 32, 32, 640,128)
+	fence412 = love.graphics.newQuad(13*32, 2*32, 32, 32, 640,128)
+	fence1234 = love.graphics.newQuad(15*32, 2*32, 32, 32, 640,128)
+	
+	fenceType = fence
+	water=water1
+	--[[
 	water1 = love.graphics.newImage("resources/tiles/Water1.png")
 	water2 = love.graphics.newImage("resources/tiles/Water2.png")
 	water3 = love.graphics.newImage("resources/tiles/Water3.png")
@@ -57,8 +93,9 @@ function love.load()
 	vertBridge = love.graphics.newImage("resources/tiles/VertBridge.png")
 	
 	waterLadder = love.graphics.newImage("resources/tiles/WaterLadder.jpg")
-
+	]]
 	love.window.setCaption("Terrain Generation Alpha")
+	love.window.setIcon(iconimg)
 	--love.window.setMode(tonumber(arg[2]),tonumber(arg[3]),{vsync = false, resizable=true})
 	love.window.setMode(800,800,{vsync = false})
 	--length/width of map and tile squares 
@@ -138,7 +175,7 @@ function love.load()
 	genBridges(400)
 	genPonds(100)	
 	genTrees(20000)
-	--genLongGrass(70000)
+	--genLongGrass(7000)
 	
 	
 	
@@ -505,6 +542,16 @@ function love.update(dt)
 				elseif mousewheelitem==3 then
 					objectmap[y][x] = mousewheelitem
 					love.graphics.setColor(55,170,40,255)
+				elseif mousewheelitem==7 then
+					objectmap[y][x] = 0
+					love.graphics.setColor(55,170,40,255)
+				elseif mousewheelitem==8 then
+					objectmap[y][x] = mousewheelitem
+					love.graphics.setColor(55,170,40,255)
+				elseif mousewheelitem==9 then
+					objectmap[y][x] = mousewheelitem
+					love.graphics.setColor(55,170,40,255)
+					--updateFence(x, y)
 				else
 					love.graphics.setColor(0,255,0,255)
 				end
@@ -690,54 +737,61 @@ function love.draw()
 					if map[y][x]>=0 then
 						if map[y][x]==1 then
 							love.graphics.setColor(mapheight[y][x]*3+200,mapheight[y][x]*3+200,mapheight[y][x]*3+200,255)
-							love.graphics.draw(water,x*tilesize, y*tilesize)
+							love.graphics.drawq(sprites,water,x*tilesize, y*tilesize,0,tilesize/32,tilesize/32)
 						elseif map[y][x]==2 then
 							--love.graphics.setColor(mapheight[y][x]*3+180,mapheight[y][x]*3+180,mapheight[y][x]*3+180,255)
 							love.graphics.setColor(255-mapheight[y][x]*3,255-mapheight[y][x]*3,255-mapheight[y][x]*3,255)
-							love.graphics.draw(grass,x*tilesize, y*tilesize)	
+							love.graphics.drawq(sprites,grass,x*tilesize, y*tilesize,0,tilesize/32,tilesize/32)	
 						elseif map[y][x]==3 then
 							love.graphics.setColor(255-mapheight[y][x]*3,255-mapheight[y][x]*3,255-mapheight[y][x]*3,255)
-							love.graphics.draw(tree,x*tilesize, y*tilesize)
+							love.graphics.drawq(sprites,tree,x*tilesize, y*tilesize, 0, tilesize/32, tilesize/32)
 						elseif map[y][x]==4 then
 							love.graphics.setColor(255-mapheight[y][x]*3,255-mapheight[y][x]*3,255-mapheight[y][x]*3,255)
-							love.graphics.draw(beach,x*tilesize, y*tilesize)
+							love.graphics.drawq(sprites,beach,x*tilesize, y*tilesize,0,tilesize/32,tilesize/32)
 						elseif map[y][x]==5 then
 							love.graphics.setColor(210,210,210,255)
-							love.graphics.draw(horiBridge,x*tilesize, y*tilesize)
+							love.graphics.drawq(sprites,horiBridge,x*tilesize, y*tilesize,0,tilesize/32,tilesize/32)
 						elseif map[y][x]==6 then
 							love.graphics.setColor(210,210,210,255)
-							love.graphics.draw(vertBridge,x*tilesize, y*tilesize)
+							love.graphics.drawq(sprites,vertBridge,x*tilesize, y*tilesize,0,tilesize/32,tilesize/32)
 						elseif map[y][x]==7 then
 							love.graphics.setColor(255-mapheight[y][x]*3,255-mapheight[y][x]*3,255-mapheight[y][x]*3,255)
-							love.graphics.draw(waterLadder,x*tilesize, y*tilesize)
+							love.graphics.drawq(sprites,waterLadder,x*tilesize, y*tilesize,0,tilesize/32,tilesize/32)
 						elseif map[y][x]==8 then
 							love.graphics.setColor(255-mapheight[y][x]*3,255-mapheight[y][x]*3,255-mapheight[y][x]*3,255)
-							love.graphics.draw(longGrass,x*tilesize, y*tilesize)
+							love.graphics.drawq(sprites,longGrass,x*tilesize, y*tilesize,0,tilesize/32,tilesize/32)
 						else 
 							love.graphics.setColor(0,255,0,255)
 							love.graphics.rectangle("fill",x*tilesize,y*tilesize,tilesize,tilesize)
 						end
 						if objectmap[y][x]==5 then
 							love.graphics.setColor(210,210,210,255)
-							love.graphics.draw(horiBridge,x*tilesize, y*tilesize)
+							love.graphics.drawq(sprites,horiBridge,x*tilesize, y*tilesize,0,tilesize/32,tilesize/32)
 						elseif objectmap[y][x]==6 then
 							love.graphics.setColor(210,210,210,255)
-							love.graphics.draw(vertBridge,x*tilesize, y*tilesize)
+							love.graphics.drawq(sprites,vertBridge,x*tilesize, y*tilesize,0,tilesize/32,tilesize/32)
 						elseif objectmap[y][x]==3 then
 							love.graphics.setColor(210,210,210,255)
-							love.graphics.draw(tree,x*tilesize, y*tilesize)
+							love.graphics.drawq(sprites,tree,x*tilesize, y*tilesize,0,tilesize/32,tilesize/32)
+						elseif objectmap[y][x]==7 then
+							love.graphics.setColor(210,210,210,255)
+							love.graphics.drawq(sprites,waterLadder,x*tilesize, y*tilesize,0,tilesize/32,tilesize/32)
 						elseif objectmap[y][x]==8 then
 							love.graphics.setColor(210,210,210,255)
-							love.graphics.draw(longGrass,x*tilesize, y*tilesize)
+							love.graphics.drawq(sprites,longGrass,x*tilesize, y*tilesize,0,tilesize/32,tilesize/32)
+						elseif objectmap[y][x]==9 then
+							love.graphics.setColor(210,210,210,255)
+							--love.graphics.drawq(sprites,fence,x*tilesize, y*tilesize,0,tilesize/32,tilesize/32)
+							updateFence(x,y)
 						end
 					end
 				else
 					if map[y][x]<=10 then
 							love.graphics.setColor(map[y][x]*3+100,map[y][x]*3+100,map[y][x]*3+100,255)
-							love.graphics.draw(water,x*tilesize, y*tilesize)
+							love.graphics.drawq(sprites,water,x*tilesize, y*tilesize)
 						elseif map[y][x]<=50 then
 							love.graphics.setColor(255-map[y][x]*3-100,255-map[y][x]*3-100,255-map[y][x]*3-100,255)
-							love.graphics.draw(grass,x*tilesize, y*tilesize)
+							love.graphics.drawq(sprites,grass,x*tilesize, y*tilesize)
 						else
 							love.graphics.setColor(0,255,0,255)
 							love.graphics.rectangle("fill",x*tilesize,y*tilesize,tilesize,tilesize)
@@ -880,45 +934,105 @@ end
 function love.mousepressed( x, y, button )
 	if button == "wd" then
 		mousewheelitem = mousewheelitem +1
-		if mousewheelitem >8 then
+		if mousewheelitem >9 then
 			mousewheelitem = 1
 		end
 		wheelitemcount = 255
+		--character.x = xrange * (tilesize-1)
+		--character.y = yrange * (tilesize-1)
+		--tilesize = tilesize - 1
+		
 	end
 	if button == "wu" then
 		mousewheelitem = mousewheelitem -1
 		if mousewheelitem < 1 then
-			mousewheelitem = 8
+			mousewheelitem = 9
 		end
 		wheelitemcount = 255
+		--character.x = xrange * (tilesize-1)
+		--character.y = yrange * (tilesize-1)
+		--tilesize = tilesize + 1
+		
 	end
 end
 
 function displayMouseItem (mousewheelitem, alpha, xpos, ypos)
 	if mousewheelitem == 1 then
 		love.graphics.setColor(255,255,255,alpha)
-		love.graphics.draw(water,camera.x+500+xpos,camera.y+40+ypos)
+		love.graphics.drawq(sprites,water,camera.x+500+xpos,camera.y+40+ypos)
 	elseif mousewheelitem == 2 then
 		love.graphics.setColor(255,255,255,alpha)
-		love.graphics.draw(grass,camera.x+500+xpos,camera.y+40+ypos)
+		love.graphics.drawq(sprites,grass,camera.x+500+xpos,camera.y+40+ypos)
 	elseif mousewheelitem == 3 then
 		love.graphics.setColor(255,255,255,alpha)
-		love.graphics.draw(tree,camera.x+500+xpos,camera.y+40+ypos)
+		love.graphics.drawq(sprites,tree,camera.x+500+xpos,camera.y+40+ypos)
 	elseif mousewheelitem == 4 then
 		love.graphics.setColor(255,255,255,alpha)
-		love.graphics.draw(beach,camera.x+500+xpos,camera.y+40+ypos)
+		love.graphics.drawq(sprites,beach,camera.x+500+xpos,camera.y+40+ypos)
 	elseif mousewheelitem == 5 then
 		love.graphics.setColor(255,255,255,alpha)
-		love.graphics.draw(horiBridge,camera.x+500+xpos,camera.y+40+ypos)
+		love.graphics.drawq(sprites,horiBridge,camera.x+500+xpos,camera.y+40+ypos)
 	elseif mousewheelitem == 6 then
 		love.graphics.setColor(255,255,255,alpha)
-		love.graphics.draw(vertBridge,camera.x+500+xpos,camera.y+40+ypos)
+		love.graphics.drawq(sprites,vertBridge,camera.x+500+xpos,camera.y+40+ypos)
 	elseif mousewheelitem == 7 then
 		love.graphics.setColor(255,255,255,alpha)
-		love.graphics.draw(waterLadder,camera.x+500+xpos,camera.y+40+ypos)
+		love.graphics.drawq(sprites,waterLadder,camera.x+500+xpos,camera.y+40+ypos)
 	elseif mousewheelitem == 8 then
 		love.graphics.setColor(255,255,255,alpha)
-		love.graphics.draw(longGrass,camera.x+500+xpos,camera.y+40+ypos)
+		love.graphics.drawq(sprites,longGrass,camera.x+500+xpos,camera.y+40+ypos)
+	elseif mousewheelitem == 9 then
+		love.graphics.setColor(255,255,255,alpha)
+		love.graphics.drawq(sprites,fence,camera.x+500+xpos,camera.y+40+ypos)
 	end
 end
+
+function updateFence(xpos, ypos)
+	if objectmap[ypos-1][xpos] == 9 and objectmap[ypos+1][xpos] == 9 and objectmap[ypos][xpos+1] == 9 and objectmap[ypos][xpos-1] == 9 then
+		love.graphics.drawq(sprites,fence1234,xpos*tilesize, ypos*tilesize,0,tilesize/32,tilesize/32)
+	elseif objectmap[ypos+1][xpos] == 9 and objectmap[ypos][xpos+1] == 9 and objectmap[ypos][xpos-1] == 9 then
+		love.graphics.drawq(sprites,fence341,xpos*tilesize, ypos*tilesize,0,tilesize/32,tilesize/32)
+	elseif objectmap[ypos-1][xpos] == 9 and objectmap[ypos][xpos+1] == 9 and objectmap[ypos][xpos-1] == 9 then
+		love.graphics.drawq(sprites,fence123,xpos*tilesize, ypos*tilesize,0,tilesize/32,tilesize/32)
+	elseif objectmap[ypos-1][xpos] == 9 and objectmap[ypos+1][xpos] == 9 and objectmap[ypos][xpos-1] == 9 then
+		love.graphics.drawq(sprites,fence412,xpos*tilesize, ypos*tilesize,0,tilesize/32,tilesize/32)
+	elseif objectmap[ypos+1][xpos] == 9 and objectmap[ypos-1][xpos] == 9 and objectmap[ypos][xpos+1] == 9 then
+		love.graphics.drawq(sprites,fence234,xpos*tilesize, ypos*tilesize,0,tilesize/32,tilesize/32)
+	elseif objectmap[ypos+1][xpos] == 9 and objectmap[ypos][xpos+1] == 9 then
+		love.graphics.drawq(sprites,fence34,xpos*tilesize, ypos*tilesize,0,tilesize/32,tilesize/32)
+	elseif objectmap[ypos-1][xpos] == 9 and objectmap[ypos][xpos+1] == 9 then
+		love.graphics.drawq(sprites,fence23,xpos*tilesize, ypos*tilesize,0,tilesize/32,tilesize/32)
+	elseif objectmap[ypos+1][xpos] == 9 and objectmap[ypos][xpos-1] == 9 then
+		love.graphics.drawq(sprites,fence41,xpos*tilesize, ypos*tilesize,0,tilesize/32,tilesize/32)
+	elseif objectmap[ypos-1][xpos] == 9 and objectmap[ypos][xpos-1] == 9 then
+		love.graphics.drawq(sprites,fence12,xpos*tilesize, ypos*tilesize,0,tilesize/32,tilesize/32)
+	elseif objectmap[ypos+1][xpos] == 9 and objectmap[ypos-1][xpos] == 9 then
+		love.graphics.drawq(sprites,fence24,xpos*tilesize, ypos*tilesize,0,tilesize/32,tilesize/32)
+	elseif objectmap[ypos][xpos+1] == 9 and objectmap[ypos][xpos-1] == 9 then
+		love.graphics.drawq(sprites,fence13,xpos*tilesize, ypos*tilesize,0,tilesize/32,tilesize/32)
+	elseif objectmap[ypos+1][xpos] == 9 then
+		love.graphics.drawq(sprites,fence4,xpos*tilesize, ypos*tilesize,0,tilesize/32,tilesize/32)
+	elseif objectmap[ypos-1][xpos] == 9 then
+		love.graphics.drawq(sprites,fence2,xpos*tilesize, ypos*tilesize,0,tilesize/32,tilesize/32)
+	elseif objectmap[ypos][xpos+1] == 9 then
+		love.graphics.drawq(sprites,fence3,xpos*tilesize, ypos*tilesize,0,tilesize/32,tilesize/32)
+	elseif objectmap[ypos][xpos-1] == 9 then
+		love.graphics.drawq(sprites,fence1,xpos*tilesize, ypos*tilesize,0,tilesize/32,tilesize/32)
+	else
+		love.graphics.drawq(sprites,fence,xpos*tilesize, ypos*tilesize,0,tilesize/32,tilesize/32)
+	end
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
 
