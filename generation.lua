@@ -275,8 +275,36 @@ function genDungeons(rooms, xin, yin,count)
 	--for i=0,rooms do
 	width = math.random(1,4)
 	height = math.random(1,4)
-	xpos = math.random(width,20)+xin-10
-	ypos = math.random(height,20)+yin-10
+	
+	foundSpace = false
+	while foundSpace == false do
+		foundPos = false
+		giveup = 0
+		while foundPos == false or giveup > 10 do
+			giveup = giveup + 1
+			xpos = math.random(width,20)+xin-10
+			ypos = math.random(height,20)+yin-10
+			if xpos < 150 and xpos > 0 and ypos < 150 and ypos > 0 then
+				foundPos = true
+			end
+		end
+		
+		spaceCount = 0
+		for xadd=0-width,width do
+			for yadd=0-height,height do
+				if yadd+ypos > ymin and yadd +ypos < ymax and xadd+xpos > xmin and xadd +xpos < xmax then
+					if map[yadd+ypos][xadd+xpos]~=2 then
+						spaceCount = spaceCount + 1
+					end
+				end
+			end
+		end
+		if spaceCount == (width * 2 + 1) * (height * 2 + 1) then
+			foundSpace = true
+		end
+		
+	end
+	
 	for xadd=0-width,width do
 		for yadd=0-height,height do
 			if yadd+ypos > ymin and yadd +ypos < ymax and xadd+xpos > xmin and xadd +xpos < xmax then
@@ -316,51 +344,3 @@ function genDungeons(rooms, xin, yin,count)
 
 end
 
-
-
-function genDungeons2(rooms, x, y,count)
-	xpos=x
-	ypos=y
-	if y > ymin and y < ymax and x > xmin and x < xmax then
-		objectmap[y][x]=9
-	end
-	xdungeon = x
-	ydungeon = y
-	
-	randnum = math.random(1,6)
-	count = countdungeon + 1
-	countdungeon = countdungeon + 1
-	if count < rooms then
-		if randnum == 1 then
-			genDungeons(rooms, xpos+1, ypos, count)
-		elseif randnum == 2 then
-			genDungeons(rooms, xpos-1, ypos, count)
-		elseif randnum == 3 then
-			genDungeons(rooms, xpos, ypos+1, count)
-		elseif randnum == 4 then
-			genDungeons(rooms, xpos, ypos-1, count)
-		elseif randnum == 5 then
-			genDungeons(rooms, xpos+1, ypos+1, count)
-			genDungeons(rooms, xpos, ypos+1, count)
-		elseif randnum == 6 then
-			genDungeons(rooms, xpos-1, ypos-1, count)
-			genDungeons(rooms, xpos-1, ypos, count)
-		elseif randnum == 7 then
-			genDungeons(rooms, xpos, ypos, count)
-		elseif randnum == 8 then
-			genDungeons(rooms, xpos, ypos, count)
-		elseif randnum == 9 then
-			genDungeons(rooms, xpos, ypos, count)
-		elseif randnum == 10 then
-			genDungeons(rooms, xpos, ypos, count)
-		end
-	end
-	
-	
-	if y > ymin and y < ymax and x > xmin and x < xmax then
-		love.graphics.setCanvas(minimapcanvas)
-			love.graphics.setColor(65,220,60,255)
-			love.graphics.rectangle("fill",x,y,1,1)
-		love.graphics.setCanvas()
-	end
-end

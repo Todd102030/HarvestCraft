@@ -211,8 +211,8 @@ function love.load()
 		minimapcanvas:clear()
 		--love.graphics.setColor(0,0,0,255)
 		--love.graphics.rectangle("fill", 0,0,2010,2010)
-		for x=0,500 do
-			for y=0,500 do
+		for x=xmin,xmax do
+			for y=ymin,ymax do
 				--if y+yrangenorm-25 > ymin and y+yrangenorm-25 < ymax and x+xrangenorm-25 > xmin and x+xrangenorm-25 < xmax then
 					--if minimap[y+yrange-50][x+xrange-50].mapvisible == true then
 				--if map[y][x]>=0 then
