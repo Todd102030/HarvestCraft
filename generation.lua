@@ -232,3 +232,135 @@ function genLongGrass(amount)
 		end
 	end
 end
+
+
+
+function genDungeon(rooms, x, y,count)
+	lastRoomX = x
+	lastRoomY = y
+	--for i=0,rooms do
+	width = math.random(5,10)
+	height = math.random(5,10)
+	xpos = math.random(0,100)
+	ypos = math.random(0,100)
+	for x=0,width do
+		for y=0,rooms do
+			if y+ypos > ymin and y +ypos < ymax and x+xpos > xmin and x +xpos < xmax then
+				map[y+ypos][x+xpos] = 2
+			end
+		end
+	end
+		
+	connectRooms(lastRoomX, lastRoomY, xpos, ypos)
+	count = count + 1
+	if count < rooms then
+		genDungeon(rooms, xpos, ypos, count)
+	end
+	
+	--end
+end
+
+function connectRooms(oldx,oldy,newx,newy)
+	for x = oldx,newx do
+		map[newy][x] = 2
+	end
+	for y = oldy,newy do
+		map[y][oldx] = 2
+	end
+end
+
+function genDungeons(rooms, xin, yin,count)
+	lastRoomX = xin
+	lastRoomY = yin
+	--for i=0,rooms do
+	width = math.random(1,4)
+	height = math.random(1,4)
+	xpos = math.random(width,20)+xin-10
+	ypos = math.random(height,20)+yin-10
+	for xadd=0-width,width do
+		for yadd=0-height,height do
+			if yadd+ypos > ymin and yadd +ypos < ymax and xadd+xpos > xmin and xadd +xpos < xmax then
+				map[yadd+ypos][xadd+xpos] = 2
+			end
+		end
+	end
+	
+	if count > 0 then
+		if xpos <= lastRoomX then
+			for xadd = xpos, lastRoomX do
+				
+				map[lastRoomY][xadd] = 2
+			
+			end
+		else
+			for xadd = lastRoomX, xpos do
+				map[lastRoomY][xadd] = 2
+			end
+		end
+			
+		if ypos <= lastRoomY then
+			for yadd = ypos, lastRoomY do
+				map[yadd][xpos] = 2
+			end
+		else
+			for yadd = lastRoomY, ypos do
+				map[yadd][xpos] = 2
+			end
+		end
+	end
+	--connectRooms(lastRoomX, lastRoomY, xpos, ypos)
+	count = count + 1
+	if count <= rooms then
+		genDungeons(rooms, xpos, ypos, count)
+	end
+
+end
+
+
+
+function genDungeons2(rooms, x, y,count)
+	xpos=x
+	ypos=y
+	if y > ymin and y < ymax and x > xmin and x < xmax then
+		objectmap[y][x]=9
+	end
+	xdungeon = x
+	ydungeon = y
+	
+	randnum = math.random(1,6)
+	count = countdungeon + 1
+	countdungeon = countdungeon + 1
+	if count < rooms then
+		if randnum == 1 then
+			genDungeons(rooms, xpos+1, ypos, count)
+		elseif randnum == 2 then
+			genDungeons(rooms, xpos-1, ypos, count)
+		elseif randnum == 3 then
+			genDungeons(rooms, xpos, ypos+1, count)
+		elseif randnum == 4 then
+			genDungeons(rooms, xpos, ypos-1, count)
+		elseif randnum == 5 then
+			genDungeons(rooms, xpos+1, ypos+1, count)
+			genDungeons(rooms, xpos, ypos+1, count)
+		elseif randnum == 6 then
+			genDungeons(rooms, xpos-1, ypos-1, count)
+			genDungeons(rooms, xpos-1, ypos, count)
+		elseif randnum == 7 then
+			genDungeons(rooms, xpos, ypos, count)
+		elseif randnum == 8 then
+			genDungeons(rooms, xpos, ypos, count)
+		elseif randnum == 9 then
+			genDungeons(rooms, xpos, ypos, count)
+		elseif randnum == 10 then
+			genDungeons(rooms, xpos, ypos, count)
+		end
+	end
+	
+	
+	if y > ymin and y < ymax and x > xmin and x < xmax then
+		love.graphics.setCanvas(minimapcanvas)
+			love.graphics.setColor(65,220,60,255)
+			love.graphics.rectangle("fill",x,y,1,1)
+		love.graphics.setCanvas()
+	end
+end
