@@ -232,3 +232,115 @@ function genLongGrass(amount)
 		end
 	end
 end
+
+
+
+function genDungeon(rooms, x, y,count)
+	lastRoomX = x
+	lastRoomY = y
+	--for i=0,rooms do
+	width = math.random(5,10)
+	height = math.random(5,10)
+	xpos = math.random(0,100)
+	ypos = math.random(0,100)
+	for x=0,width do
+		for y=0,rooms do
+			if y+ypos > ymin and y +ypos < ymax and x+xpos > xmin and x +xpos < xmax then
+				map[y+ypos][x+xpos] = 2
+			end
+		end
+	end
+		
+	connectRooms(lastRoomX, lastRoomY, xpos, ypos)
+	count = count + 1
+	if count < rooms then
+		genDungeon(rooms, xpos, ypos, count)
+	end
+	
+	--end
+end
+
+function connectRooms(oldx,oldy,newx,newy)
+	for x = oldx,newx do
+		map[newy][x] = 2
+	end
+	for y = oldy,newy do
+		map[y][oldx] = 2
+	end
+end
+
+function genDungeons(rooms, xin, yin,count)
+	lastRoomX = xin
+	lastRoomY = yin
+	--for i=0,rooms do
+	width = math.random(1,4)
+	height = math.random(1,4)
+	
+	foundSpace = false
+	while foundSpace == false do
+		foundPos = false
+		giveup = 0
+		while foundPos == false or giveup > 10 do
+			giveup = giveup + 1
+			xpos = math.random(width,20)+xin-10
+			ypos = math.random(height,20)+yin-10
+			if xpos < 150 and xpos > 0 and ypos < 150 and ypos > 0 then
+				foundPos = true
+			end
+		end
+		
+		spaceCount = 0
+		for xadd=0-width,width do
+			for yadd=0-height,height do
+				if yadd+ypos > ymin and yadd +ypos < ymax and xadd+xpos > xmin and xadd +xpos < xmax then
+					if map[yadd+ypos][xadd+xpos]~=2 then
+						spaceCount = spaceCount + 1
+					end
+				end
+			end
+		end
+		if spaceCount == (width * 2 + 1) * (height * 2 + 1) then
+			foundSpace = true
+		end
+		
+	end
+	
+	for xadd=0-width,width do
+		for yadd=0-height,height do
+			if yadd+ypos > ymin and yadd +ypos < ymax and xadd+xpos > xmin and xadd +xpos < xmax then
+				map[yadd+ypos][xadd+xpos] = 2
+			end
+		end
+	end
+	
+	if count > 0 then
+		if xpos <= lastRoomX then
+			for xadd = xpos, lastRoomX do
+				
+				map[lastRoomY][xadd] = 2
+			
+			end
+		else
+			for xadd = lastRoomX, xpos do
+				map[lastRoomY][xadd] = 2
+			end
+		end
+			
+		if ypos <= lastRoomY then
+			for yadd = ypos, lastRoomY do
+				map[yadd][xpos] = 2
+			end
+		else
+			for yadd = lastRoomY, ypos do
+				map[yadd][xpos] = 2
+			end
+		end
+	end
+	--connectRooms(lastRoomX, lastRoomY, xpos, ypos)
+	count = count + 1
+	if count <= rooms then
+		genDungeons(rooms, xpos, ypos, count)
+	end
+
+end
+

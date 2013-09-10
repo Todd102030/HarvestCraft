@@ -104,8 +104,8 @@ function love.load()
 
 	--main character
 	character = {}
-	character.x = 700
-	character.y = 700
+	character.x = 400
+	character.y = 400
 	
 	--variables to aid in making the camera follow the character; xrange
 	xrange = (character.x + 16) / tilesize
@@ -125,6 +125,10 @@ function love.load()
 	--radius of dynamic lighting around player
 	sightradius = 16
 	
+	
+	xdungeon = 100
+	ydungeon = 100
+	countdungeon=0
 	
 	
 	minimapcanvas = love.graphics.newCanvas(500,500)
@@ -171,10 +175,11 @@ function love.load()
 	end
 	
 	
-	genIslands(1200)
-	genBridges(400)
-	genPonds(100)	
-	genTrees(20000)
+	genDungeons(25,75,75,0)
+	--genIslands(1200)
+	--genBridges(400)
+	--genPonds(100)	
+	--genTrees(20000)
 	--genLongGrass(7000)
 	
 	
@@ -206,8 +211,8 @@ function love.load()
 		minimapcanvas:clear()
 		--love.graphics.setColor(0,0,0,255)
 		--love.graphics.rectangle("fill", 0,0,2010,2010)
-		for x=0,500 do
-			for y=0,500 do
+		for x=xmin,xmax do
+			for y=ymin,ymax do
 				--if y+yrangenorm-25 > ymin and y+yrangenorm-25 < ymax and x+xrangenorm-25 > xmin and x+xrangenorm-25 < xmax then
 					--if minimap[y+yrange-50][x+xrange-50].mapvisible == true then
 				--if map[y][x]>=0 then
@@ -233,6 +238,9 @@ function love.load()
 			end
 		end
 	love.graphics.setCanvas()
+		
+		
+	
 		
 	--[[
 	love.graphics.setCanvas(mapcanvas)
@@ -641,6 +649,11 @@ function love.update(dt)
 		end
 	end
     
+    
+    
+    
+    
+    --genDungeons(2,xdungeon,ydungeon,0)
     
     --------------------
     --------------------
