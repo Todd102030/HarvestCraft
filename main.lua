@@ -58,7 +58,7 @@ function love.load()
 	longGrass = love.graphics.newQuad(6*32, 0*32, 32, 32, 640,128)
 	horiBridge = love.graphics.newQuad(0*32, 3*32, 32, 32, 640,128)
 	vertBridge = love.graphics.newQuad(1*32, 3*32, 32, 32, 640,128)
-	waterLadder = love.graphics.newQuad(6*32, 0*32, 32, 32, 640,128)
+	waterLadder = love.graphics.newQuad(2*32, 3*32, 32, 32, 640,128)
 	
 	fence = love.graphics.newQuad(0*32, 2*32, 32, 32, 640,128)
 	fence1 = love.graphics.newQuad(1*32, 2*32, 32, 32, 640,128)
@@ -529,38 +529,39 @@ function love.update(dt)
 		y = math.floor((camera.y + ymouse) / tilesize)---yrangenorm --math.floor(mapy/tilesize)+yrangenorm-tilesize
 		x = math.floor((camera.x + xmouse) / tilesize)---xrangenorm --math.floor(mapx/tilesize)+xrangenorm-tilesize
 		if y > ymin and y < ymax and x > xmin and x < xmax then
-			
-			love.graphics.setCanvas(minimapcanvas)
-				if mousewheelitem==1 then
-					map[y][x] = mousewheelitem
-					love.graphics.setColor(65,150,240,255)
-				elseif mousewheelitem==2 then
-					map[y][x] = mousewheelitem
-					love.graphics.setColor(75,190,60,255)
-				elseif mousewheelitem==5 or mousewheelitem==6 then
-					objectmap[y][x] = mousewheelitem
-					love.graphics.setColor(120,95,0,255)
-				elseif mousewheelitem==4 then
-					map[y][x] = mousewheelitem
-					love.graphics.setColor(220,210,120,255)
-				elseif mousewheelitem==3 then
-					objectmap[y][x] = mousewheelitem
-					love.graphics.setColor(55,170,40,255)
-				elseif mousewheelitem==7 then
-					objectmap[y][x] = 0
-					love.graphics.setColor(55,170,40,255)
-				elseif mousewheelitem==8 then
-					objectmap[y][x] = mousewheelitem
-					love.graphics.setColor(55,170,40,255)
-				elseif mousewheelitem==9 then
-					objectmap[y][x] = mousewheelitem
-					love.graphics.setColor(55,170,40,255)
-					--updateFence(x, y)
-				else
-					love.graphics.setColor(0,255,0,255)
-				end
-				love.graphics.rectangle("fill",x,y,1,1)
-			love.graphics.setCanvas()
+			--if y ~= yrange and x ~= xrange then
+				love.graphics.setCanvas(minimapcanvas)
+					if mousewheelitem==1 then
+						map[y][x] = mousewheelitem
+						love.graphics.setColor(65,150,240,255)
+					elseif mousewheelitem==2 then
+						map[y][x] = mousewheelitem
+						love.graphics.setColor(75,190,60,255)
+					elseif mousewheelitem==5 or mousewheelitem==6 then
+						objectmap[y][x] = mousewheelitem
+						love.graphics.setColor(120,95,0,255)
+					elseif mousewheelitem==4 then
+						map[y][x] = mousewheelitem
+						love.graphics.setColor(220,210,120,255)
+					elseif mousewheelitem==3 then
+						objectmap[y][x] = mousewheelitem
+						love.graphics.setColor(55,170,40,255)
+					elseif mousewheelitem==7 then
+						objectmap[y][x] = 0
+						love.graphics.setColor(55,170,40,255)
+					elseif mousewheelitem==8 then
+						objectmap[y][x] = mousewheelitem
+						love.graphics.setColor(55,170,40,255)
+					elseif mousewheelitem==9 then
+						objectmap[y][x] = mousewheelitem
+						love.graphics.setColor(55,170,40,255)
+						--updateFence(x, y)
+					else
+						love.graphics.setColor(0,255,0,255)
+					end
+					love.graphics.rectangle("fill",x,y,1,1)
+				love.graphics.setCanvas()
+			--end
 		end
 	end
 		
@@ -1026,8 +1027,6 @@ function updateFence(xpos, ypos)
 		love.graphics.drawq(sprites,fence,xpos*tilesize, ypos*tilesize,0,tilesize/32,tilesize/32)
 	end
 end
-
-
 
 
 
