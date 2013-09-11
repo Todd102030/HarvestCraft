@@ -175,7 +175,9 @@ function love.load()
 	end
 	
 	
-	genDungeons(25,75,75,0)
+	genComplexDungeons(25,75,75,0)
+	
+	genLinearDungeons(25,175,75,0)
 	--genIslands(1200)
 	--genBridges(400)
 	--genPonds(100)	
