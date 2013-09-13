@@ -1,10 +1,10 @@
 
 --THINGS TO DO
---Make tilesize adjustable without breaking everything //SEEMS FIXED
+--//Make tilesize adjustable without breaking everything //SEEMS FIXED
 --Make graphics for each height level; dark water, light water, sand, grass, dirt, rock, snow
 --Fix the radiuses on the terrain gen
 --Fix the out of bounds errors
---Fix painting so that it normalizes properly and stops getting out of line with the mouse.
+--//Fix painting so that it normalizes properly and stops getting out of line with the mouse.
 --//optimize minimap
 --Fix rotation on dynamic lighting 
 --Make dynamic lighting keep moving outwards uphill until it reaches a peak and starts going downwards. 
@@ -113,7 +113,7 @@ function love.load()
 	
 	
 	--variable that determines whether or not to use the lighting engine
-	cave = false
+	cave = true
 	
 
 	--outermost range of map array
@@ -148,6 +148,7 @@ function love.load()
 	mapheighttoggle = false
 	objectmaptoggle = false
 	
+	renderSize = 8
 	
 	watercount = 0
 	togglecount = 0
@@ -209,6 +210,39 @@ function love.load()
 	
 	
 	
+	--[[love.graphics.setCanvas(minimapcanvas)
+		minimapcanvas:clear()
+		--love.graphics.setColor(0,0,0,255)
+		--love.graphics.rectangle("fill", 0,0,2010,2010)
+		for x=xmin,xmax do
+			for y=ymin,ymax do
+				--if y+yrangenorm-25 > ymin and y+yrangenorm-25 < ymax and x+xrangenorm-25 > xmin and x+xrangenorm-25 < xmax then
+					--if minimap[y+yrange-50][x+xrange-50].mapvisible == true then
+				--if map[y][x]>=0 then
+				if map[y][x]==1 then
+					love.graphics.setColor(65,150,240,255)
+				elseif map[y][x]==2 then
+					love.graphics.setColor(75,190,60,255)
+				elseif map[y][x]==4 then
+					love.graphics.setColor(220,210,120,255)
+				else
+					love.graphics.setColor(0,255,0,255)
+				end
+				if objectmap[y][x]==5 or objectmap[y][x]==6 then
+					love.graphics.setColor(120,95,0,255)
+				elseif objectmap[y][x]==3 then
+					love.graphics.setColor(55,170,40,255)
+				end
+				love.graphics.rectangle("fill",x,y,1,1)
+					--love.graphics.rectangle("fill",x--[[*minimapsize]],y--[[*minimapsize]],minimapsize,minimapsize)
+				--end
+					--end
+				--end
+			end
+		end
+	love.graphics.setCanvas()]]
+		
+		
 	love.graphics.setCanvas(minimapcanvas)
 		minimapcanvas:clear()
 		--love.graphics.setColor(0,0,0,255)
@@ -240,9 +274,6 @@ function love.load()
 			end
 		end
 	love.graphics.setCanvas()
-		
-		
-	
 		
 	--[[
 	love.graphics.setCanvas(mapcanvas)
@@ -388,22 +419,22 @@ function love.update(dt)
 	
 	--Character movement, pretty straightforward
 	if love.keyboard.isDown("d") then 
-		if objectmap[yrange][math.floor((character.x + 16 + charspeed) / tilesize)] ~=9 then
+		if map[yrange][math.floor((character.x + 16 + charspeed) / tilesize)] ==2 then
 			character.x = character.x + charspeed
 		end
     end
 	if love.keyboard.isDown("a") then 
-		if objectmap[yrange][math.floor((character.x + 16 - charspeed) / tilesize)] ~=9 then
+		if map[yrange][math.floor((character.x + 16 - charspeed) / tilesize)] ==2 then
 			character.x = character.x - charspeed
 		end
     end
     if love.keyboard.isDown("w") then 
-		if objectmap[math.floor((character.y + 16 - charspeed) / tilesize)][xrange] ~=9 then
+		if map[math.floor((character.y + 16 - charspeed) / tilesize)][xrange] ==2 then
 			character.y = character.y - charspeed
 		end
     end
     if love.keyboard.isDown("s") then 
-		if objectmap[math.floor((character.y + 16 + charspeed) / tilesize)][xrange] ~=9 then
+		if map[math.floor((character.y + 16 + charspeed) / tilesize)][xrange] ==2 then
 			character.y = character.y + charspeed
 		end
     end
@@ -569,7 +600,9 @@ function love.update(dt)
 					else
 						love.graphics.setColor(0,255,0,255)
 					end
-					love.graphics.rectangle("fill",x,y,1,1)
+					if objectmap[y][x] == 0 then
+						love.graphics.rectangle("fill",x,y,1,1)
+					end
 				love.graphics.setCanvas()
 			--end
 		end
@@ -682,7 +715,7 @@ function love.update(dt)
 				xdist = math.ceil(math.sin(theta)*distance)
 				ydist = math.ceil(math.cos(theta)*distance)
 				
-				if rotation <= resolution * 0.25 then
+				--[[if rotation <= resolution * 0.25 then
 					if character.ypos - ydist > ymin and character.ypos - ydist < ymax and character.xpos + xdist > xmin and character.xpos + xdist < xmax then	
 						if map[character.ypos - ydist][character.xpos + xdist] > map[character.ypos][character.xpos]+2 then
 							mapblocked[character.ypos - ydist][character.xpos + xdist].blocked = true
@@ -722,6 +755,47 @@ function love.update(dt)
 							minimap[character.ypos + ydist][character.xpos + math.abs(xdist)].mapvisible = true
 						end
 					end
+				end]]
+				if rotation <= resolution * 0.25 then
+					if character.ypos - ydist > ymin and character.ypos - ydist < ymax and character.xpos + xdist > xmin and character.xpos + xdist < xmax then	
+						if map[character.ypos - ydist][character.xpos + xdist] ~=2 then
+							mapblocked[character.ypos - ydist][character.xpos + xdist].blocked = true
+							break
+						else
+							mapblocked[character.ypos - ydist][character.xpos + xdist].blocked = false
+							minimap[character.ypos - ydist][character.xpos + xdist].mapvisible = true
+						end
+					end
+				elseif rotation <= resolution * 0.5 then
+					if character.ypos - math.abs(ydist) > ymin and character.ypos - math.abs(ydist) < ymax and character.xpos - xdist > xmin and character.xpos - xdist < xmax then
+						if map[character.ypos - math.abs(ydist)][character.xpos - xdist] ~=2 then
+							mapblocked[character.ypos - math.abs(ydist)][character.xpos - xdist].blocked = true
+							break
+						else
+							mapblocked[character.ypos - math.abs(ydist)][character.xpos - xdist].blocked = false
+							minimap[character.ypos - math.abs(ydist)][character.xpos - xdist].mapvisible = true
+						end
+					end
+				elseif rotation <= resolution * 0.75 then
+					if character.ypos + math.abs(ydist) > ymin and character.ypos + math.abs(ydist) < ymax and character.xpos - math.abs(xdist) > xmin and character.xpos - math.abs(xdist) < xmax then	
+						if map[character.ypos + math.abs(ydist)][character.xpos - math.abs(xdist)] ~= 2 then
+							mapblocked[character.ypos + math.abs(ydist)][character.xpos - math.abs(xdist)].blocked = true
+							break
+						else
+							mapblocked[character.ypos + math.abs(ydist)][character.xpos - math.abs(xdist)].blocked = false
+							minimap[character.ypos + math.abs(ydist)][character.xpos - math.abs(xdist)].mapvisible = true
+						end
+					end
+				elseif rotation <= resolution then
+					if character.ypos + ydist > ymin and character.ypos + ydist < ymax and character.xpos + math.abs(xdist) > xmin and character.xpos + math.abs(xdist) < xmax then	
+						if map[character.ypos + ydist][character.xpos + math.abs(xdist)] ~= 2 then
+							mapblocked[character.ypos + ydist][character.xpos + math.abs(xdist)].blocked = true
+							break
+						else
+							mapblocked[character.ypos + ydist][character.xpos + math.abs(xdist)].blocked = false
+							minimap[character.ypos + ydist][character.xpos + math.abs(xdist)].mapvisible = true
+						end
+					end
 				end
 			end
 		end
@@ -749,8 +823,8 @@ function love.draw()
 	camera:set()
 	--Pretty straightforward code to determine what tiles to draw on the screen
 	love.graphics.setColor(0,0,0,255)
-	for x=xrangenorm-13,xrangenorm +13 do
-		for y=yrangenorm-13,yrangenorm +13 do
+	for x=xrangenorm-renderSize,xrangenorm +renderSize do
+		for y=yrangenorm-renderSize,yrangenorm +renderSize do
 			if y > ymin and y < ymax and x > xmin and x < xmax then
 				--map[x][y]=math.random(0,3)
 				if mapblocked[y][x].blocked == false or lighting == false or cave == false then
@@ -806,16 +880,58 @@ function love.draw()
 						end
 					end
 				else
-					if map[y][x]<=10 then
-							love.graphics.setColor(map[y][x]*3+100,map[y][x]*3+100,map[y][x]*3+100,255)
-							love.graphics.drawq(sprites,water,x*tilesize, y*tilesize)
-						elseif map[y][x]<=50 then
-							love.graphics.setColor(255-map[y][x]*3-100,255-map[y][x]*3-100,255-map[y][x]*3-100,255)
-							love.graphics.drawq(sprites,grass,x*tilesize, y*tilesize)
-						else
-							love.graphics.setColor(0,255,0,255)
+					if map[y][x]>=0 then
+						love.graphics.setColor(110,110,110,255)
+						if map[y][x]==1 then
+							--love.graphics.setColor(mapheight[y][x]*3+200,mapheight[y][x]*3+200,mapheight[y][x]*3+200,255)
+							love.graphics.drawq(sprites,water,x*tilesize, y*tilesize,0,tilesize/32,tilesize/32)
+						elseif map[y][x]==2 then
+							--love.graphics.setColor(mapheight[y][x]*3+180,mapheight[y][x]*3+180,mapheight[y][x]*3+180,255)
+							--love.graphics.setColor(255-mapheight[y][x]*3,255-mapheight[y][x]*3,255-mapheight[y][x]*3,255)
+							love.graphics.drawq(sprites,grass,x*tilesize, y*tilesize,0,tilesize/32,tilesize/32)	
+						elseif map[y][x]==3 then
+							--love.graphics.setColor(255-mapheight[y][x]*3,255-mapheight[y][x]*3,255-mapheight[y][x]*3,255)
+							love.graphics.drawq(sprites,tree,x*tilesize, y*tilesize, 0, tilesize/32, tilesize/32)
+						elseif map[y][x]==4 then
+							--love.graphics.setColor(255-mapheight[y][x]*3,255-mapheight[y][x]*3,255-mapheight[y][x]*3,255)
+							love.graphics.drawq(sprites,beach,x*tilesize, y*tilesize,0,tilesize/32,tilesize/32)
+						elseif map[y][x]==5 then
+							--love.graphics.setColor(210,210,210,255)
+							love.graphics.drawq(sprites,horiBridge,x*tilesize, y*tilesize,0,tilesize/32,tilesize/32)
+						elseif map[y][x]==6 then
+							--love.graphics.setColor(210,210,210,255)
+							love.graphics.drawq(sprites,vertBridge,x*tilesize, y*tilesize,0,tilesize/32,tilesize/32)
+						elseif map[y][x]==7 then
+							--love.graphics.setColor(255-mapheight[y][x]*3,255-mapheight[y][x]*3,255-mapheight[y][x]*3,255)
+							love.graphics.drawq(sprites,waterLadder,x*tilesize, y*tilesize,0,tilesize/32,tilesize/32)
+						elseif map[y][x]==8 then
+							--love.graphics.setColor(255-mapheight[y][x]*3,255-mapheight[y][x]*3,255-mapheight[y][x]*3,255)
+							love.graphics.drawq(sprites,longGrass,x*tilesize, y*tilesize,0,tilesize/32,tilesize/32)
+						else 
+							--love.graphics.setColor(0,255,0,255)
 							love.graphics.rectangle("fill",x*tilesize,y*tilesize,tilesize,tilesize)
 						end
+						if objectmap[y][x]==5 then
+							--love.graphics.setColor(210,210,210,255)
+							love.graphics.drawq(sprites,horiBridge,x*tilesize, y*tilesize,0,tilesize/32,tilesize/32)
+						elseif objectmap[y][x]==6 then
+							--love.graphics.setColor(210,210,210,255)
+							love.graphics.drawq(sprites,vertBridge,x*tilesize, y*tilesize,0,tilesize/32,tilesize/32)
+						elseif objectmap[y][x]==3 then
+							--love.graphics.setColor(210,210,210,255)
+							love.graphics.drawq(sprites,tree,x*tilesize, y*tilesize,0,tilesize/32,tilesize/32)
+						elseif objectmap[y][x]==7 then
+							--love.graphics.setColor(210,210,210,255)
+							love.graphics.drawq(sprites,waterLadder,x*tilesize, y*tilesize,0,tilesize/32,tilesize/32)
+						elseif objectmap[y][x]==8 then
+							--love.graphics.setColor(210,210,210,255)
+							love.graphics.drawq(sprites,longGrass,x*tilesize, y*tilesize,0,tilesize/32,tilesize/32)
+						elseif objectmap[y][x]==9 then
+							--love.graphics.setColor(210,210,210,255)
+							--love.graphics.drawq(sprites,fence,x*tilesize, y*tilesize,0,tilesize/32,tilesize/32)
+							updateFence(x,y)
+						end
+					end
 					--love.graphics.setColor(0,0,0,90)
 					--love.graphics.rectangle("fill",x*tilesize,y*tilesize,tilesize,tilesize)
 				end
