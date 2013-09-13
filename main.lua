@@ -47,6 +47,14 @@ function love.load()
 	characterimg = love.graphics.newImage("resources/tiles/character.png")
 	
 	sprites = love.graphics.newImage("resources/tiles/Spritesheet.png")
+	charSprite = love.graphics.newImage("resources/tiles/characterSprite.png")
+	
+	charUp = love.graphics.newQuad(2*32, 0*32, 32, 32, 128,32)
+	charDown = love.graphics.newQuad(3*32, 0*32, 32, 32, 128,32)
+	charLeft = love.graphics.newQuad(1*32, 0*32, 32, 32, 128,32)
+	charRight = love.graphics.newQuad(0*32, 0*32, 32, 32, 128,32)
+	
+	char=charUp
 	
 	grass = love.graphics.newQuad(0*32, 0*32, 32, 32, 640,128)
 	water1 = love.graphics.newQuad(1*32, 0*32, 32, 32, 640,128)
@@ -94,7 +102,7 @@ function love.load()
 	
 	waterLadder = love.graphics.newImage("resources/tiles/WaterLadder.jpg")
 	]]
-	love.window.setCaption("Terrain Generation Alpha")
+	love.window.setCaption("HarvestCraft Alpha")
 	love.window.setIcon(iconimg)
 	--love.window.setMode(tonumber(arg[2]),tonumber(arg[3]),{vsync = false, resizable=true})
 	love.window.setMode(800,800,{vsync = false})
@@ -123,7 +131,7 @@ function love.load()
 	ymax = 500
 	
 	--radius of dynamic lighting around player
-	sightradius = 16
+	sightradius = 8
 	
 	
 	xdungeon = 100
@@ -148,7 +156,7 @@ function love.load()
 	mapheighttoggle = false
 	objectmaptoggle = false
 	
-	renderSize = 13
+	renderSize = 10
 	
 	watercount = 0
 	togglecount = 0
@@ -176,7 +184,7 @@ function love.load()
 	end
 	
 	
-	genComplexDungeons(25,75,75,0)
+	genComplexDungeons(35,75,75,0)
 	
 	genLinearDungeons(25,175,75,0)
 	--genIslands(1200)
@@ -425,21 +433,25 @@ function love.update(dt)
 		if map[yrange][math.floor((character.x + 16 + charspeed) / tilesize)] ==2 then
 			character.x = character.x + charspeed
 		end
+		char = charRight
     end
 	if love.keyboard.isDown("a") then 
 		if map[yrange][math.floor((character.x + 16 - charspeed) / tilesize)] ==2 then
 			character.x = character.x - charspeed
 		end
+		char = charLeft
     end
     if love.keyboard.isDown("w") then 
 		if map[math.floor((character.y + 16 - charspeed) / tilesize)][xrange] ==2 then
 			character.y = character.y - charspeed
 		end
+		char = charUp
     end
     if love.keyboard.isDown("s") then 
 		if map[math.floor((character.y + 16 + charspeed) / tilesize)][xrange] ==2 then
 			character.y = character.y + charspeed
 		end
+		char = charDown
     end
     
     --Keeps character bound within a certain area of the screen
@@ -1005,7 +1017,7 @@ function love.draw()
 	end
 	
 	love.graphics.setColor(255,255,255,255)
-	love.graphics.draw(characterimg,character.x,character.y)
+	love.graphics.drawq(charSprite,char,character.x,character.y)
 	
 	
 	--love.graphics.draw(mapcanvas)
@@ -1110,6 +1122,14 @@ function roundnum (int)
 	end
 end
 
+function love.keypressed(button)
+	if button == "9" then
+		renderSize = renderSize - 1
+	end
+	if button == "0" then
+		renderSize = renderSize + 1
+	end
+end
 
 function love.mousepressed( x, y, button )
 	if button == "wd" then

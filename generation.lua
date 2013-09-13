@@ -417,5 +417,4 @@ function genLinearDungeons(rooms, xin, yin,count)
 	if count <= rooms and xpos < xmax and xpos > xmin and ypos < ymax and ypos > ymin  then
 		genLinearDungeons(rooms, xpos, ypos, count)
 	end
-
 end
