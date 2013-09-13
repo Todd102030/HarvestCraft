@@ -148,7 +148,7 @@ function love.load()
 	mapheighttoggle = false
 	objectmaptoggle = false
 	
-	renderSize = 8
+	renderSize = 13
 	
 	watercount = 0
 	togglecount = 0
@@ -234,7 +234,7 @@ function love.load()
 					love.graphics.setColor(55,170,40,255)
 				end
 				love.graphics.rectangle("fill",x,y,1,1)
-					--love.graphics.rectangle("fill",x--[[*minimapsize]],y--[[*minimapsize]],minimapsize,minimapsize)
+					--love.graphics.rectangle("fill",x,minimapsize,minimapsize)
 				--end
 					--end
 				--end
@@ -252,7 +252,7 @@ function love.load()
 				--if y+yrangenorm-25 > ymin and y+yrangenorm-25 < ymax and x+xrangenorm-25 > xmin and x+xrangenorm-25 < xmax then
 					--if minimap[y+yrange-50][x+xrange-50].mapvisible == true then
 				--if map[y][x]>=0 then
-				if map[y][x]==1 then
+				--[[if map[y][x]==1 then
 					love.graphics.setColor(65,150,240,255)
 				elseif map[y][x]==2 then
 					love.graphics.setColor(75,190,60,255)
@@ -265,7 +265,10 @@ function love.load()
 					love.graphics.setColor(120,95,0,255)
 				elseif objectmap[y][x]==3 then
 					love.graphics.setColor(55,170,40,255)
-				end
+				end]]
+				
+				love.graphics.setColor(0,0,0,255)
+				
 				love.graphics.rectangle("fill",x,y,1,1)
 					--love.graphics.rectangle("fill",x--[[*minimapsize]],y--[[*minimapsize]],minimapsize,minimapsize)
 				--end
@@ -482,6 +485,13 @@ function love.update(dt)
 		end
 	end
 	]]
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	if love.keyboard.isDown("m") then 
@@ -802,7 +812,41 @@ function love.update(dt)
 	end
 	
 	
-	
+	love.graphics.setCanvas(minimapcanvas)
+		--love.graphics.setColor(0,0,0,255)
+		--love.graphics.rectangle("fill", 0,0,2010,2010)
+		for x=xrangenorm-renderSize,xrangenorm +renderSize do
+			for y=yrangenorm-renderSize,yrangenorm +renderSize do
+				if y > ymin and y < ymax and x > xmin and x < xmax then
+					--if y+yrangenorm-25 > ymin and y+yrangenorm-25 < ymax and x+xrangenorm-25 > xmin and x+xrangenorm-25 < xmax then
+					--if minimap[y+yrange-50][x+xrange-50].mapvisible == true then
+					if mapblocked[y][x].blocked == false then
+						--if map[y][x]>=0 then
+						if map[y][x]==1 then
+							love.graphics.setColor(65,150,240,255)
+						elseif map[y][x]==2 then
+							love.graphics.setColor(75,190,60,255)
+						elseif map[y][x]==4 then
+							love.graphics.setColor(220,210,120,255)
+						else
+							love.graphics.setColor(0,255,0,255)
+						end
+						if objectmap[y][x]==5 or objectmap[y][x]==6 then
+							love.graphics.setColor(120,95,0,255)
+						elseif objectmap[y][x]==3 then
+							love.graphics.setColor(55,170,40,255)
+						end
+						
+						love.graphics.rectangle("fill",x,y,1,1)
+							--love.graphics.rectangle("fill",x--[[*minimapsize]],y--[[*minimapsize]],minimapsize,minimapsize)
+						--end
+							--end
+						--end
+					end
+				end
+			end
+		end
+	love.graphics.setCanvas()
 	
 	
 	
