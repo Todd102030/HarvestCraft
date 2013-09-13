@@ -105,7 +105,13 @@ function love.load()
 	love.window.setCaption("HarvestCraft Alpha")
 	love.window.setIcon(iconimg)
 	--love.window.setMode(tonumber(arg[2]),tonumber(arg[3]),{vsync = false, resizable=true})
-	love.window.setMode(800,800,{vsync = false})
+	xwindow = 800
+	ywindow = 800
+	
+	love.window.setMode(xwindow,ywindow,{vsync = false})
+	
+	
+	
 	--length/width of map and tile squares 
 	minimapsize = 4
 	tilesize = 32
@@ -184,16 +190,16 @@ function love.load()
 	end
 	
 	
-	genComplexDungeons(35,75,75,0)
+	--genComplexDungeons(35,75,75,0)
 	
-	genLinearDungeons(25,175,75,0)
-	--genIslands(1200)
-	--genBridges(400)
+	
+	genIslands(1200)
+	genBridges(400)
 	--genPonds(100)	
-	--genTrees(20000)
+	genTrees(20000)
 	--genLongGrass(7000)
 	
-	
+	--genLinearDungeons(25,175,75,0)
 	
 	
 	
@@ -430,27 +436,27 @@ function love.update(dt)
 	
 	--Character movement, pretty straightforward
 	if love.keyboard.isDown("d") then 
-		if map[yrange][math.floor((character.x + 16 + charspeed) / tilesize)] ==2 then
+		--if map[yrange][math.floor((character.x + 16 + charspeed) / tilesize)] ==2 then
 			character.x = character.x + charspeed
-		end
+		--end
 		char = charRight
     end
 	if love.keyboard.isDown("a") then 
-		if map[yrange][math.floor((character.x + 16 - charspeed) / tilesize)] ==2 then
+		--if map[yrange][math.floor((character.x + 16 - charspeed) / tilesize)] ==2 then
 			character.x = character.x - charspeed
-		end
+		--end
 		char = charLeft
     end
     if love.keyboard.isDown("w") then 
-		if map[math.floor((character.y + 16 - charspeed) / tilesize)][xrange] ==2 then
+		--if map[math.floor((character.y + 16 - charspeed) / tilesize)][xrange] ==2 then
 			character.y = character.y - charspeed
-		end
+		--end
 		char = charUp
     end
     if love.keyboard.isDown("s") then 
-		if map[math.floor((character.y + 16 + charspeed) / tilesize)][xrange] ==2 then
+		--if map[math.floor((character.y + 16 + charspeed) / tilesize)][xrange] ==2 then
 			character.y = character.y + charspeed
-		end
+		--end
 		char = charDown
     end
     
@@ -1128,6 +1134,22 @@ function love.keypressed(button)
 	end
 	if button == "0" then
 		renderSize = renderSize + 1
+	end
+	if button == "1" then
+		xwindow = xwindow - 50
+		love.window.setMode(xwindow,ywindow,{vsync = false})
+	end
+	if button == "2" then
+		xwindow = xwindow + 50
+		love.window.setMode(xwindow,ywindow,{vsync = false})
+	end
+	if button == "3" then
+		ywindow = ywindow - 50
+		love.window.setMode(xwindow,ywindow,{vsync = false})
+	end
+	if button == "4" then
+		ywindow = ywindow + 50
+		love.window.setMode(xwindow,ywindow,{vsync = false})
 	end
 end
 
