@@ -162,6 +162,8 @@ function love.load()
 	maptypetoggle = false
 	mapheighttoggle = false
 	objectmaptoggle = false
+	drawgui = true
+	drawstats = true
 	
 	renderSize = 10
 	
@@ -191,16 +193,16 @@ function love.load()
 	end
 	
 	
-	--genComplexDungeons(35,75,75,0)
+	genComplexDungeons(15,75,75,0)
 	
 	
-	genIslands(1200)
-	genBridges(400)
-	genPonds(100)	
-	genTrees(20000)
+	--genIslands(1200)
+	--genBridges(400)
+	--genPonds(100)	
+	--genTrees(20000)
 	--genLongGrass(7000)
 	
-	--genLinearDungeons(25,175,75,0)
+	genLinearDungeons(75,175,75,0)
 	
 	
 	
@@ -256,7 +258,7 @@ function love.load()
 			end
 		end
 	love.graphics.setCanvas()]]
-		
+	if madeupvariable == true then	
 	if dungeon == true then	
 		love.graphics.setCanvas(minimapcanvas)
 			minimapcanvas:clear()
@@ -293,37 +295,8 @@ function love.load()
 			end
 		love.graphics.setCanvas()
 	else 
-		love.graphics.setCanvas(minimapcanvas)
-			minimapcanvas:clear()
-			--love.graphics.setColor(0,0,0,255)
-			--love.graphics.rectangle("fill", 0,0,2010,2010)
-			for x=xmin,xmax do
-				for y=ymin,ymax do
-					--if y+yrangenorm-25 > ymin and y+yrangenorm-25 < ymax and x+xrangenorm-25 > xmin and x+xrangenorm-25 < xmax then
-						--if minimap[y+yrange-50][x+xrange-50].mapvisible == true then
-					--if map[y][x]>=0 then
-					if map[y][x]==1 then
-						love.graphics.setColor(65,150,240,255)
-					elseif map[y][x]==2 then
-						love.graphics.setColor(75,190,60,255)
-					elseif map[y][x]==4 then
-						love.graphics.setColor(220,210,120,255)
-					else
-						love.graphics.setColor(0,255,0,255)
-					end
-					if objectmap[y][x]==5 or objectmap[y][x]==6 then
-						love.graphics.setColor(120,95,0,255)
-					elseif objectmap[y][x]==3 then
-						love.graphics.setColor(55,170,40,255)
-					end
-					love.graphics.rectangle("fill",x,y,1,1)
-						--love.graphics.rectangle("fill",x,minimapsize,minimapsize)
-					--end
-						--end
-					--end
-				end
-			end
-		love.graphics.setCanvas()
+		updateMiniMap()
+	end
 	end
 	
 	
@@ -590,6 +563,34 @@ function love.update(dt)
 	else
 		maptoggle3 = false
 	end
+	
+	
+	if love.keyboard.isDown("f") then 
+		if drawstats == true and maptoggle4 == false then
+			drawstats = false
+		elseif drawstats == false and maptoggle4 == false then
+			drawstats = true
+		end
+		maptoggle4=true
+	else
+		maptoggle4 = false
+	end
+	
+	
+	if love.keyboard.isDown("g") then 
+		if drawgui == true and maptoggle5 == false then
+			drawgui = false
+		elseif drawgui == false and maptoggle5 == false then
+			drawgui = true
+		end
+		maptoggle5=true
+	else
+		maptoggle5 = false
+	end
+	
+	
+	
+	
 	
 	
 		
@@ -1059,24 +1060,25 @@ function love.draw()
 	love.graphics.setColor(255,255,255,255)
 	love.graphics.drawq(charSprite,char,character.x,character.y)
 	
-	
-	--love.graphics.draw(mapcanvas)
-	love.graphics.setColor(0,0,0,100)
-	love.graphics.rectangle("fill",camera.x + love.window.getWidth()-220, camera.y+5, 215, 215)
-	love.graphics.setColor(255,255,255,200)
-	minimapcanvas:setFilter("nearest", "nearest")
-	minimapquad = love.graphics.newQuad(xrange - 26, yrange - 26, 51, 51, 500,500)
-	love.graphics.drawq(minimapcanvas, minimapquad,camera.x + love.window.getWidth()-215, camera.y+10,0,4,4)
-	
-	
-	love.graphics.setColor(0,0,0,100)
-	love.graphics.rectangle("fill",camera.x + love.window.getWidth()-280,camera.y+75,42,42)
-	
-	
-	-----funfunfunfunfufnunfufnction
-	displayMouseItem(mousewheelitem-1, wheelitemcount, camera.x + love.window.getWidth()-275, camera.y + 40)
-	displayMouseItem(mousewheelitem, 255, camera.x + love.window.getWidth()-275, camera.y + 80)
-	displayMouseItem(mousewheelitem+1, wheelitemcount, camera.x + love.window.getWidth()-275, camera.y + 120)
+	if drawgui == true then
+		--love.graphics.draw(mapcanvas)
+		love.graphics.setColor(0,0,0,100)
+		love.graphics.rectangle("fill",camera.x + love.window.getWidth()-220, camera.y+5, 215, 215)
+		love.graphics.setColor(255,255,255,200)
+		minimapcanvas:setFilter("nearest", "nearest")
+		minimapquad = love.graphics.newQuad(xrange - 26, yrange - 26, 51, 51, 500,500)
+		love.graphics.drawq(minimapcanvas, minimapquad,camera.x + love.window.getWidth()-215, camera.y+10,0,4,4)
+		
+		
+		love.graphics.setColor(0,0,0,100)
+		love.graphics.rectangle("fill",camera.x + love.window.getWidth()-280,camera.y+75,42,42)
+		
+		
+		-----funfunfunfunfufnunfufnction
+		displayMouseItem(mousewheelitem-1, wheelitemcount, camera.x + love.window.getWidth()-275, camera.y + 40)
+		displayMouseItem(mousewheelitem, 255, camera.x + love.window.getWidth()-275, camera.y + 80)
+		displayMouseItem(mousewheelitem+1, wheelitemcount, camera.x + love.window.getWidth()-275, camera.y + 120)
+	end
 	
 	--minimapdraw=false
 	if minimapdraw==true then
@@ -1114,37 +1116,32 @@ function love.draw()
 				end
 			end
 		end]]
-		love.graphics.setColor(255,255,255,255)
-		love.graphics.print("Minimap on", 150 +camera.x, 10+camera.y)
-	else
-		love.graphics.setColor(255,255,255,255)
-		love.graphics.print("Minimap off", 150 +camera.x, 10+camera.y)
 	end
 	
 	
 	
 	
 	
-	
-	--A bunch of stats displayed on screen to make things easier to debug
-	love.graphics.setColor(255,255,255,255)
+	if drawstats == true then
+		--A bunch of stats displayed on screen to make things easier to debug
+		love.graphics.setColor(255,255,255,255)
 
-	--love.graphics.draw(,x*tilesize, y*tilesize)
-	
-	
-	love.graphics.setColor(255,255,255,255)
-	love.graphics.print("Current FPS: "..tostring(love.timer.getFPS( )), 10+math.floor(camera.x), 10+math.floor(camera.y))
+		--love.graphics.draw(,x*tilesize, y*tilesize)
+		
+		
+		love.graphics.setColor(255,255,255,255)
+		love.graphics.print("Current FPS: "..tostring(love.timer.getFPS( )), 10+math.floor(camera.x), 10+math.floor(camera.y))
 
-	love.graphics.print("Xrange: "..tostring(xrange), 10+math.floor(camera.x), 50+math.floor(camera.y))
-	love.graphics.print("Yrange: "..tostring(yrange), 10+math.floor(camera.x), 70+math.floor(camera.y))
-	
-	love.graphics.print("Xrangenorm: "..tostring(xrangenorm), 10+math.floor(camera.x), 90+math.floor(camera.y))
-	love.graphics.print("Yrangenorm: "..tostring(yrangenorm), 10+math.floor(camera.x), 110+math.floor(camera.y))
-	
-	mapx, mapy = love.mouse.getPosition()
-	love.graphics.print("Xmouse: "..tostring(mapx), 10+math.floor(camera.x), 130+math.floor(camera.y))
-	love.graphics.print("Ymouse: "..tostring(mapy), 10+math.floor(camera.x), 150+math.floor(camera.y))
-	
+		love.graphics.print("Xrange: "..tostring(xrange), 10+math.floor(camera.x), 50+math.floor(camera.y))
+		love.graphics.print("Yrange: "..tostring(yrange), 10+math.floor(camera.x), 70+math.floor(camera.y))
+		
+		love.graphics.print("Xrangenorm: "..tostring(xrangenorm), 10+math.floor(camera.x), 90+math.floor(camera.y))
+		love.graphics.print("Yrangenorm: "..tostring(yrangenorm), 10+math.floor(camera.x), 110+math.floor(camera.y))
+		
+		mapx, mapy = love.mouse.getPosition()
+		love.graphics.print("Xmouse: "..tostring(mapx), 10+math.floor(camera.x), 130+math.floor(camera.y))
+		love.graphics.print("Ymouse: "..tostring(mapy), 10+math.floor(camera.x), 150+math.floor(camera.y))
+	end
 	
 	--love.timer.sleep(0.5)
 	
@@ -1184,6 +1181,9 @@ function love.keypressed(button)
 	if button == "4" then
 		ywindow = ywindow + 50
 		love.window.setMode(xwindow,ywindow,{vsync = false})
+	end
+	if button == "u" then
+		updateMiniMap()
 	end
 end
 
@@ -1280,7 +1280,39 @@ function updateFence(xpos, ypos)
 end
 
 
-
+function updateMiniMap()
+	love.graphics.setCanvas(minimapcanvas)
+		minimapcanvas:clear()
+		--love.graphics.setColor(0,0,0,255)
+		--love.graphics.rectangle("fill", 0,0,2010,2010)
+		for x=xmin,xmax do
+			for y=ymin,ymax do
+				--if y+yrangenorm-25 > ymin and y+yrangenorm-25 < ymax and x+xrangenorm-25 > xmin and x+xrangenorm-25 < xmax then
+					--if minimap[y+yrange-50][x+xrange-50].mapvisible == true then
+				--if map[y][x]>=0 then
+				if map[y][x]==1 then
+					love.graphics.setColor(65,150,240,255)
+				elseif map[y][x]==2 then
+					love.graphics.setColor(75,190,60,255)
+				elseif map[y][x]==4 then
+					love.graphics.setColor(220,210,120,255)
+				else
+					love.graphics.setColor(0,255,0,255)
+				end
+				if objectmap[y][x]==5 or objectmap[y][x]==6 then
+					love.graphics.setColor(120,95,0,255)
+				elseif objectmap[y][x]==3 then
+					love.graphics.setColor(55,170,40,255)
+				end
+				love.graphics.rectangle("fill",x,y,1,1)
+					--love.graphics.rectangle("fill",x,minimapsize,minimapsize)
+				--end
+					--end
+				--end
+			end
+		end
+	love.graphics.setCanvas()
+end
 
 
 

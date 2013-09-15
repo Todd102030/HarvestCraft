@@ -356,7 +356,7 @@ function genLinearDungeons(rooms, xin, yin,count)
 	while foundSpace == false do
 		foundPos = false
 		giveup = 0
-		while foundPos == false do
+		while foundPos == false and giveup < 10 do
 			giveup = giveup + 1
 			xpos = math.random(xin-10,xin+10)--math.random(width,20)+xin-10
 			ypos = math.random(yin-10,yin+10)---math.random(height,20)+yin-10
