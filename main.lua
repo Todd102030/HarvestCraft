@@ -156,6 +156,7 @@ function love.load()
 	
 	minimapdraw = false
 	lighting = false
+	dungeon = false
 	
 	
 	maptypetoggle = false
@@ -195,7 +196,7 @@ function love.load()
 	
 	genIslands(1200)
 	genBridges(400)
-	--genPonds(100)	
+	genPonds(100)	
 	genTrees(20000)
 	--genLongGrass(7000)
 	
@@ -256,44 +257,77 @@ function love.load()
 		end
 	love.graphics.setCanvas()]]
 		
-		
-	love.graphics.setCanvas(minimapcanvas)
-		minimapcanvas:clear()
-		--love.graphics.setColor(0,0,0,255)
-		--love.graphics.rectangle("fill", 0,0,2010,2010)
-		for x=xmin,xmax do
-			for y=ymin,ymax do
-				--if y+yrangenorm-25 > ymin and y+yrangenorm-25 < ymax and x+xrangenorm-25 > xmin and x+xrangenorm-25 < xmax then
-					--if minimap[y+yrange-50][x+xrange-50].mapvisible == true then
-				--if map[y][x]>=0 then
-				--[[if map[y][x]==1 then
-					love.graphics.setColor(65,150,240,255)
-				elseif map[y][x]==2 then
-					love.graphics.setColor(75,190,60,255)
-				elseif map[y][x]==4 then
-					love.graphics.setColor(220,210,120,255)
-				else
-					love.graphics.setColor(0,255,0,255)
-				end
-				if objectmap[y][x]==5 or objectmap[y][x]==6 then
-					love.graphics.setColor(120,95,0,255)
-				elseif objectmap[y][x]==3 then
-					love.graphics.setColor(55,170,40,255)
-				end]]
-				
-				love.graphics.setColor(0,0,0,255)
-				
-				love.graphics.rectangle("fill",x,y,1,1)
-					--love.graphics.rectangle("fill",x--[[*minimapsize]],y--[[*minimapsize]],minimapsize,minimapsize)
-				--end
+	if dungeon == true then	
+		love.graphics.setCanvas(minimapcanvas)
+			minimapcanvas:clear()
+			--love.graphics.setColor(0,0,0,255)
+			--love.graphics.rectangle("fill", 0,0,2010,2010)
+			for x=xmin,xmax do
+				for y=ymin,ymax do
+					--if y+yrangenorm-25 > ymin and y+yrangenorm-25 < ymax and x+xrangenorm-25 > xmin and x+xrangenorm-25 < xmax then
+						--if minimap[y+yrange-50][x+xrange-50].mapvisible == true then
+					--if map[y][x]>=0 then
+					--[[if map[y][x]==1 then
+						love.graphics.setColor(65,150,240,255)
+					elseif map[y][x]==2 then
+						love.graphics.setColor(75,190,60,255)
+					elseif map[y][x]==4 then
+						love.graphics.setColor(220,210,120,255)
+					else
+						love.graphics.setColor(0,255,0,255)
+					end
+					if objectmap[y][x]==5 or objectmap[y][x]==6 then
+						love.graphics.setColor(120,95,0,255)
+					elseif objectmap[y][x]==3 then
+						love.graphics.setColor(55,170,40,255)
+					end]]
+					
+					love.graphics.setColor(0,0,0,255)
+					
+					love.graphics.rectangle("fill",x,y,1,1)
+						--love.graphics.rectangle("fill",x--[[*minimapsize]],y--[[*minimapsize]],minimapsize,minimapsize)
 					--end
-				--end
+						--end
+					--end
+				end
 			end
-		end
-	love.graphics.setCanvas()
-		
-	--[[
-	love.graphics.setCanvas(mapcanvas)
+		love.graphics.setCanvas()
+	else 
+		love.graphics.setCanvas(minimapcanvas)
+			minimapcanvas:clear()
+			--love.graphics.setColor(0,0,0,255)
+			--love.graphics.rectangle("fill", 0,0,2010,2010)
+			for x=xmin,xmax do
+				for y=ymin,ymax do
+					--if y+yrangenorm-25 > ymin and y+yrangenorm-25 < ymax and x+xrangenorm-25 > xmin and x+xrangenorm-25 < xmax then
+						--if minimap[y+yrange-50][x+xrange-50].mapvisible == true then
+					--if map[y][x]>=0 then
+					if map[y][x]==1 then
+						love.graphics.setColor(65,150,240,255)
+					elseif map[y][x]==2 then
+						love.graphics.setColor(75,190,60,255)
+					elseif map[y][x]==4 then
+						love.graphics.setColor(220,210,120,255)
+					else
+						love.graphics.setColor(0,255,0,255)
+					end
+					if objectmap[y][x]==5 or objectmap[y][x]==6 then
+						love.graphics.setColor(120,95,0,255)
+					elseif objectmap[y][x]==3 then
+						love.graphics.setColor(55,170,40,255)
+					end
+					love.graphics.rectangle("fill",x,y,1,1)
+						--love.graphics.rectangle("fill",x,minimapsize,minimapsize)
+					--end
+						--end
+					--end
+				end
+			end
+		love.graphics.setCanvas()
+	end
+	
+	
+	--[[love.graphics.setCanvas(mapcanvas)
 		mapcanvas:clear()
 		for x=xmin,xmax do
 			for y=ymin,ymax do
@@ -353,8 +387,8 @@ function love.load()
 				end
 			end
 		end
-	love.graphics.setCanvas()
-	]]
+	love.graphics.setCanvas()]]
+	
 	
 	--camera code found on http://nova-fusion.com/2011/04/19/cameras-in-love2d-part-1-the-basics/
 	--very useful, but I don't know exactly what it's doing
@@ -461,22 +495,22 @@ function love.update(dt)
     end
     
     --Keeps character bound within a certain area of the screen
-    if character.y > 450+camera.y then
+    if character.y > camera.y + (love.window.getHeight()*0.75) then
 		camera.y = roundnum(camera.y + charspeed)
-		character.y = 450+camera.y
+		character.y = camera.y + (love.window.getHeight()*0.75)
 	end
-	if character.y < 350+camera.y then
+	if character.y < camera.y + (love.window.getHeight()*0.25) then
 		camera.y = roundnum(camera.y - charspeed)
-		character.y = 350+camera.y
+		character.y = camera.y + (love.window.getHeight()*0.25)
 	end
-	if character.x > 450+camera.x then
+	if character.x > camera.x + (love.window.getWidth()*0.75) then
 		camera.x = roundnum(camera.x + charspeed)
-		character.x = 450+camera.x
+		character.x = camera.x + (love.window.getWidth()*0.75)
 		
 	end
-	if character.x < 350+camera.x then
+	if character.x < camera.x + (love.window.getWidth()*0.25) then
 		camera.x = roundnum(camera.x - charspeed)
-		character.x = 350+camera.x
+		character.x = camera.x + (love.window.getWidth()*0.25)
 	end
     
     --xrange and yrange are variables that show where the character is
@@ -488,8 +522,8 @@ function love.update(dt)
 	yrange = math.floor(yrangefloat)
 	
 	--these will be 
-	xrangenorm = math.floor((camera.x+400)/tilesize)
-	yrangenorm = math.floor((camera.y+400)/tilesize)
+	xrangenorm = math.floor((camera.x+love.window.getWidth()/2)/tilesize)
+	yrangenorm = math.floor((camera.y+love.window.getHeight()/2)/tilesize)
 	--[[
     if togglecount > 1 then
 		if love.keyboard.isDown("m") then 
@@ -1027,22 +1061,22 @@ function love.draw()
 	
 	
 	--love.graphics.draw(mapcanvas)
-	love.graphics.setColor(0,0,0,255)
-	love.graphics.rectangle("fill", 585+camera.x, camera.y, 215, 215)
-	love.graphics.setColor(255,255,255,255)
+	love.graphics.setColor(0,0,0,100)
+	love.graphics.rectangle("fill",camera.x + love.window.getWidth()-220, camera.y+5, 215, 215)
+	love.graphics.setColor(255,255,255,200)
 	minimapcanvas:setFilter("nearest", "nearest")
 	minimapquad = love.graphics.newQuad(xrange - 26, yrange - 26, 51, 51, 500,500)
-	love.graphics.drawq(minimapcanvas, minimapquad,590+camera.x, 5+camera.y,0,4,4)
+	love.graphics.drawq(minimapcanvas, minimapquad,camera.x + love.window.getWidth()-215, camera.y+10,0,4,4)
 	
 	
-	love.graphics.setColor(0,0,0,255)
-	love.graphics.rectangle("fill",camera.x+535,camera.y+75,42,42)
+	love.graphics.setColor(0,0,0,100)
+	love.graphics.rectangle("fill",camera.x + love.window.getWidth()-280,camera.y+75,42,42)
 	
 	
 	-----funfunfunfunfufnunfufnction
-	displayMouseItem(mousewheelitem-1, wheelitemcount, 40, 0)
-	displayMouseItem(mousewheelitem, 255, 40, 40)
-	displayMouseItem(mousewheelitem+1, wheelitemcount, 40, 80)
+	displayMouseItem(mousewheelitem-1, wheelitemcount, camera.x + love.window.getWidth()-275, camera.y + 40)
+	displayMouseItem(mousewheelitem, 255, camera.x + love.window.getWidth()-275, camera.y + 80)
+	displayMouseItem(mousewheelitem+1, wheelitemcount, camera.x + love.window.getWidth()-275, camera.y + 120)
 	
 	--minimapdraw=false
 	if minimapdraw==true then
@@ -1181,31 +1215,31 @@ end
 function displayMouseItem (mousewheelitem, alpha, xpos, ypos)
 	if mousewheelitem == 1 then
 		love.graphics.setColor(255,255,255,alpha)
-		love.graphics.drawq(sprites,water,camera.x+500+xpos,camera.y+40+ypos)
+		love.graphics.drawq(sprites,water,xpos,ypos)
 	elseif mousewheelitem == 2 then
 		love.graphics.setColor(255,255,255,alpha)
-		love.graphics.drawq(sprites,grass,camera.x+500+xpos,camera.y+40+ypos)
+		love.graphics.drawq(sprites,grass,xpos,ypos)
 	elseif mousewheelitem == 3 then
 		love.graphics.setColor(255,255,255,alpha)
-		love.graphics.drawq(sprites,tree,camera.x+500+xpos,camera.y+40+ypos)
+		love.graphics.drawq(sprites,tree,xpos,ypos)
 	elseif mousewheelitem == 4 then
 		love.graphics.setColor(255,255,255,alpha)
-		love.graphics.drawq(sprites,beach,camera.x+500+xpos,camera.y+40+ypos)
+		love.graphics.drawq(sprites,beach,xpos,ypos)
 	elseif mousewheelitem == 5 then
 		love.graphics.setColor(255,255,255,alpha)
-		love.graphics.drawq(sprites,horiBridge,camera.x+500+xpos,camera.y+40+ypos)
+		love.graphics.drawq(sprites,horiBridge,xpos,ypos)
 	elseif mousewheelitem == 6 then
 		love.graphics.setColor(255,255,255,alpha)
-		love.graphics.drawq(sprites,vertBridge,camera.x+500+xpos,camera.y+40+ypos)
+		love.graphics.drawq(sprites,vertBridge,xpos,ypos)
 	elseif mousewheelitem == 7 then
 		love.graphics.setColor(255,255,255,alpha)
-		love.graphics.drawq(sprites,waterLadder,camera.x+500+xpos,camera.y+40+ypos)
+		love.graphics.drawq(sprites,waterLadder,xpos,ypos)
 	elseif mousewheelitem == 8 then
 		love.graphics.setColor(255,255,255,alpha)
-		love.graphics.drawq(sprites,longGrass,camera.x+500+xpos,camera.y+40+ypos)
+		love.graphics.drawq(sprites,longGrass,xpos,ypos)
 	elseif mousewheelitem == 9 then
 		love.graphics.setColor(255,255,255,alpha)
-		love.graphics.drawq(sprites,fence,camera.x+500+xpos,camera.y+40+ypos)
+		love.graphics.drawq(sprites,fence,xpos,ypos)
 	end
 end
 
