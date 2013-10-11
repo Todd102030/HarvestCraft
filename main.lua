@@ -193,14 +193,14 @@ function love.load()
 	end
 	
 	
-	genComplexDungeons(15,75,75,0)
-	--genIslands(1200)
-	--genBridges(400)
-	--genPonds(100)	
-	--genTrees(20000)
+	--genBorderedDungeons(50,50,50,0)
+	genIslands(1200)
+	genBridges(400)
+	genPonds(100)	
+	genTrees(20000)
 	--genLongGrass(7000)
-	genLinearDungeons(25,175,75,0)
-	genIsaacDungeons(30,300,100,0)
+	--genLinearDungeons(25,175,75,0)
+	--genIsaacDungeons(30,300,100,0)
 	--genDesert(2000)
 	
 	
@@ -256,7 +256,8 @@ function love.load()
 			end
 		end
 	love.graphics.setCanvas()]]
-	if madeupvariable == true then	
+	--if madeupvariable == true then
+	dungeon = true	
 	if dungeon == true then	
 		love.graphics.setCanvas(minimapcanvas)
 			minimapcanvas:clear()
@@ -295,7 +296,7 @@ function love.load()
 	else 
 		updateMiniMap()
 	end
-	end
+	--end
 	
 	
 	--[[love.graphics.setCanvas(mapcanvas)
@@ -466,6 +467,7 @@ function love.update(dt)
     end
     
     --Keeps character bound within a certain area of the screen
+    
     if character.y > camera.y + (love.window.getHeight()*0.6) then
 		camera.y = roundnum(camera.y + charspeed)
 		character.y = camera.y + (love.window.getHeight()*0.6)
