@@ -62,6 +62,76 @@ function genIslands(amount)
 end
 
 
+
+
+function genDesert(amount)
+	--basic terrain generation algorithm
+	--needs more detail
+	
+	for y = ymin,ymax do
+		for x = xmin,xmax do
+			map[y][x]=4
+		end
+	end	
+	
+	for i=1,amount do
+		mapy = math.random(ymin,ymax)
+		mapx = math.random(xmin,xmax)
+		mapheight[mapy][mapx]=math.random(1,8)
+		
+		xrand = math.random(5,15)
+		--yrand = math.random(5,15)
+		yrand=xrand
+		
+		for y = mapy - yrand, mapy + yrand do
+			for x = mapx - xrand, mapx + xrand do
+				if y > ymin and y < ymax and x > xmin and x < xmax then
+					--[[if xrand > yrand then
+						radiussize = xrand
+					else
+						radiussize = yrand
+					end
+					radius = radiussize + 1 - (math.floor(math.sqrt(math.pow(mapy - y,2) + math.pow(mapx - x,2)))) 
+					]]--
+					if xrand > yrand then
+						radiussize = xrand
+					else
+						radiussize = yrand
+					end
+					
+					radius = radiussize + 1 - (math.floor(math.sqrt(math.pow(mapy - y,2) + math.pow(mapx - x,2)))) 
+					--[[if xrand > yrand then
+						radius = radius * (yrand/xrand)
+					else
+						radius = radius * (xrand/yrand)
+					end]]--
+					
+					
+					if mapx == x and mapy == y then
+						mapheight[y][x] = mapheight[y-1][x]
+					else
+						mapheight[y][x] = mapheight[y][x] + radius
+					end
+					if mapheight[y][x] < 0 then
+						mapheight[y][x] = 0
+					end
+					if mapheight[y][x] > 24 then
+						mapheight[y][x] = 24
+					end
+					
+					map[y][x] = 4
+					
+					--if mapheight[y][x] == 9 or mapheight[y][x] == 8 --[[or mapheight[y][x] == 7 or mapheight[y][x] == 6]] then
+					--	map[y][x] = 4
+					--end
+				end
+				
+			end
+		end
+	end
+end
+
+
 function genBridges(amount)
 	for i=1,amount do
 	--drawBridge = false
@@ -416,5 +486,72 @@ function genLinearDungeons(rooms, xin, yin,count)
 	count = count + 1
 	if count <= rooms and xpos < xmax and xpos > xmin and ypos < ymax and ypos > ymin  then
 		genLinearDungeons(rooms, xpos, ypos, count)
+	end
+end
+
+
+function genIsaacDungeons(rooms, xpos, ypos,count)
+	width = 3
+	height = 2
+	
+	direction = math.random(1,4)
+	count = count + 1
+	if direction == 1 then
+		ypos = ypos + 6
+		for xadd=0-width,width do
+			for yadd=0-height,height do
+				if yadd+ypos > ymin and yadd +ypos < ymax and xadd+xpos > xmin and xadd +xpos < xmax then
+					map[yadd+ypos][xadd+xpos] = 2
+				end
+			end
+		end
+		map[ypos-3][xpos]=2
+		if count <= rooms and xpos < xmax and xpos > xmin and ypos < ymax and ypos > ymin  then
+			genIsaacDungeons(rooms, xpos, ypos, count)
+		end
+	end
+	
+	
+	if direction == 2 then
+		ypos = ypos - 6
+		for xadd=0-width,width do
+			for yadd=0-height,height do
+				if yadd+ypos > ymin and yadd +ypos < ymax and xadd+xpos > xmin and xadd +xpos < xmax then
+					map[yadd+ypos][xadd+xpos] = 2
+				end
+			end
+		end
+		map[ypos+3][xpos]=2
+		if count <= rooms and xpos < xmax and xpos > xmin and ypos < ymax and ypos > ymin  then
+			genIsaacDungeons(rooms, xpos, ypos, count)
+		end
+	end
+	if direction == 3 then
+		xpos = xpos + 8
+		for xadd=0-width,width do
+			for yadd=0-height,height do
+				if yadd+ypos > ymin and yadd +ypos < ymax and xadd+xpos > xmin and xadd +xpos < xmax then
+					map[yadd+ypos][xadd+xpos] = 2
+				end
+			end
+		end
+		map[ypos][xpos-4]=2
+		if count <= rooms and xpos < xmax and xpos > xmin and ypos < ymax and ypos > ymin  then
+			genIsaacDungeons(rooms, xpos, ypos, count)
+		end
+	end
+	if direction == 4 then
+		xpos = xpos - 8
+		for xadd=0-width,width do
+			for yadd=0-height,height do
+				if yadd+ypos > ymin and yadd +ypos < ymax and xadd+xpos > xmin and xadd +xpos < xmax then
+					map[yadd+ypos][xadd+xpos] = 2
+				end
+			end
+		end
+		map[ypos][xpos+4]=2
+		if count <= rooms and xpos < xmax and xpos > xmin and ypos < ymax and ypos > ymin  then
+			genIsaacDungeons(rooms, xpos, ypos, count)
+		end
 	end
 end

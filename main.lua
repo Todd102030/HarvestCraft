@@ -105,10 +105,10 @@ function love.load()
 	love.window.setCaption("HarvestCraft Alpha")
 	love.window.setIcon(iconimg)
 	--love.window.setMode(tonumber(arg[2]),tonumber(arg[3]),{vsync = false, resizable=true})
-	xwindow = 800
-	ywindow = 800
+	xwindow = 600
+	ywindow = 400
 	
-	love.window.setMode(xwindow,ywindow,{vsync = false})
+	love.window.setMode(xwindow,ywindow,{resizable = true, vsync = false})
 	
 	
 	
@@ -194,16 +194,14 @@ function love.load()
 	
 	
 	genComplexDungeons(15,75,75,0)
-	
-	
 	--genIslands(1200)
 	--genBridges(400)
 	--genPonds(100)	
 	--genTrees(20000)
 	--genLongGrass(7000)
-	
-	genLinearDungeons(75,175,75,0)
-	
+	genLinearDungeons(25,175,75,0)
+	genIsaacDungeons(30,300,100,0)
+	--genDesert(2000)
 	
 	
 	--[[
@@ -468,22 +466,22 @@ function love.update(dt)
     end
     
     --Keeps character bound within a certain area of the screen
-    if character.y > camera.y + (love.window.getHeight()*0.75) then
+    if character.y > camera.y + (love.window.getHeight()*0.6) then
 		camera.y = roundnum(camera.y + charspeed)
-		character.y = camera.y + (love.window.getHeight()*0.75)
+		character.y = camera.y + (love.window.getHeight()*0.6)
 	end
-	if character.y < camera.y + (love.window.getHeight()*0.25) then
+	if character.y < camera.y + (love.window.getHeight()*0.4) then
 		camera.y = roundnum(camera.y - charspeed)
-		character.y = camera.y + (love.window.getHeight()*0.25)
+		character.y = camera.y + (love.window.getHeight()*0.4)
 	end
-	if character.x > camera.x + (love.window.getWidth()*0.75) then
+	if character.x > camera.x + (love.window.getWidth()*0.6) then
 		camera.x = roundnum(camera.x + charspeed)
-		character.x = camera.x + (love.window.getWidth()*0.75)
+		character.x = camera.x + (love.window.getWidth()*0.6)
 		
 	end
-	if character.x < camera.x + (love.window.getWidth()*0.25) then
+	if character.x < camera.x + (love.window.getWidth()*0.4) then
 		camera.x = roundnum(camera.x - charspeed)
-		character.x = camera.x + (love.window.getWidth()*0.25)
+		character.x = camera.x + (love.window.getWidth()*0.4)
 	end
     
     --xrange and yrange are variables that show where the character is
@@ -937,7 +935,9 @@ function love.draw()
 							love.graphics.setColor(255-mapheight[y][x]*3,255-mapheight[y][x]*3,255-mapheight[y][x]*3,255)
 							love.graphics.drawq(sprites,tree,x*tilesize, y*tilesize, 0, tilesize/32, tilesize/32)
 						elseif map[y][x]==4 then
-							love.graphics.setColor(255-mapheight[y][x]*3,255-mapheight[y][x]*3,255-mapheight[y][x]*3,255)
+							love.graphics.setColor(mapheight[y][x]*3+180,mapheight[y][x]*3+180,mapheight[y][x]*3+180,255)
+							--love.graphics.setColor(mapheight[y][x]*3+200,mapheight[y][x]*3+200,mapheight[y][x]*3+200,255)
+							--love.graphics.setColor(255-mapheight[y][x]*3,255-mapheight[y][x]*3,255-mapheight[y][x]*3,255)
 							love.graphics.drawq(sprites,beach,x*tilesize, y*tilesize,0,tilesize/32,tilesize/32)
 						elseif map[y][x]==5 then
 							love.graphics.setColor(210,210,210,255)
